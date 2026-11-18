@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>St Ignatius Exam Portal</title>
+<style>
+  *{box-sizing:border-box;font-family:Arial,sans-serif}
+  body{margin:0;background:#eef2f7}
+  .header{background:green;color:#fff;padding:22px 16px;text-align:center;border-bottom:5px solid #19b5d4;}
+  .header h1{margin:0;font-size:28px;font-family:russian;} .header p{margin:6px 0 0;opacity:.9}
+  .header .motto{color:black;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:bold;display:inline-block;margin-top:8px}
+  .container{padding:12px;max-width:850px;margin:auto}
+  .card{background:#777;padding:16px;border-radius:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+  h2,h3{color:#000;margin:0 0 10px;text-align:center;background:aqua}
+  input,select,button{width:100%;padding:13px;margin:6px 0;border-radius:10px;border:1px solid #ccc;font-size:16px}
+  button{border:none;font-weight:bold;cursor:pointer}
+  .btn-blue{background:#0b2a4a;color:#fff} .btn-green{background:#1a7a3a;color:#fff} .btn-orange{background:#e67e22;color:#fff} .btn-red{background:#c0392b;color:#fff}
+  .top-buttons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+  .top-buttons button{padding:16px 6px;font-size:15px}
+  .top-buttons button.active{outline:3px solid #f5b301;transform:scale(1.03)}
+  .term-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+  .term-tabs button{background:#eee;color:#333} .term-tabs button.active{background:#0b2a4a;color:#fff}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{background:#0b2a4a;color:#fff;padding:14px;border-radius:10px;text-align:center}
+  .stat b{font-size:22px;display:block}
+  .stat.best{background:#1a7a3a} .stat.poor{background:#c0392b}
+  .class-card{background:#f8f9ff;border:2px solid #0b2a4a;border-radius:10px;padding:12px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{border:1px solid #ddd;padding:8px;text-align:left}
+  th{background:#0b2a4a;color:#fff}
+  .hidden{display:none} .small{font-size:13px;color:#666} .badge{background:#e8f5e9;padding:5px 10px;border-radius:20px;font-weight:bold}
+  .center{text-align:center}
+  .check-row{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+  .check-row label{background:#eef2f7;padding:10px 14px;border-radius:10px;font-size:15px;cursor:pointer;border:1px solid #ccc}
+  .check-row input{width:auto;margin:0 6px 0 0}
+  .choose-box{background:#fff7e0;border:2px solid #f5b301;border-radius:12px;padding:12px;margin:10px 0}
+  .footer{color:#000;text-align:center;padding:24px 14px;margin-top:20px;border-top:5px solid #f5b301}
+  .footer h3{color:#000;margin:0 0 6px;font-family:script;}
+  .footer p{margin:5px 0;font-size:14px;opacity:.95}
+  .footer a{color:#blue;text-decoration:none;font-weight:bold;background:#fff;}
+  .footer .small{font-size:12px;opacity:.7}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <p style="background:#777;color:#fff;width:3.5cm;"><marquee direction="right">WELCOME!</marquee></p><br>
+  <h1>ST. IGNATIUS OF LOYOLA BOARDING SEC SCHOOL</h1>
+  <span class="motto"><b><i>"WITH GOD'S HELP"</i></b></span>
+  <p style="background:#fff;color:#000;font-family:arabic">📍CHITIPA, NTHALIRE <br>Post Office Box 2<br><br><b>THE DIOCESE OF KARONGA</b></p><br>
+  <p style="background:aqua;color:#000;">EXAMINATION  PORTAL</p>
+</div>
+
+<div class="container">
+
+<div class="top-buttons" id="mainButtons">
+  <button id="btnStudent" class="btn-blue active" onclick="showTab('student')">STUDENT</button>
+  <button id="btnTeacher" class="btn-green" onclick="showTab('teacher')">TEACHER</button>
+  <button id="btnAdmin" class="btn-orange" onclick="showTab('admin')">🔐ADMIN</button>
+</div>
+
+<div id="tab-student" class="card">
+  <h2>STUDENT PORTAL</h2>
+  <div id="studentRegisterBox">
+    <h3>Create Account</h3>
+    <p style="color:blue;">Create your PIN 4-8 numbers.</p>
+    <input id="sName" placeholder="FULL NAME e.g RONALD RONNEX">
+    <input id="sExam" placeholder="Exam Number e.g. IG/F4/001">
+    <select id="sForm"><option value="1">Form 1</option><option value="2">Form 2</option><option value="3">Form 3</option><option value="4">Form 4</option></select>
+    <input id="sPin" type="password" inputmode="numeric" placeholder="Create PIN (4-8 numbers)">
+    <button class="btn-green" onclick="registerStudent()">Create My Account</button>
+    <p style="text-align:center;">Already have account? <a href="#" onclick="showStudentLogin();return false;">Login Here</a></p><br>
+    <p style="color:#fff;font-size:9px;">NOTE: ENTER ALL YOUR DETAILS REGISTERED BY THE SCHOOL e.g EXAM NO & NAME FOR THIS HELPS 
+      YOUR RESULTS TO BE LOCATED TO YOUR ACCOUNT CORRECTLY</p>
+  </div>
+  <div id="studentLoginBox" class="hidden">
+    <h3>Login</h3>
+    <input id="sLoginExam" placeholder="Exam Number IG/F/000">
+    <input id="sLoginPin" type="password" inputmode="numeric" placeholder="Your PIN">
+    <button class="btn-blue" onclick="loginStudent()">Login as Student</button>
+    <p style="text-align:center;">No account? <a href="#" onclick="showStudentRegister();return false;">Create Account</a></p>
+  </div>
+  <p class="small" id="studentMsg"></p>
+</div>
+
+<div id="tab-teacher" class="card hidden">
+  <h2>TEACHER'S PORTAL</h2>
+  <div id="teacherRegisterBox">
+    <h3>Create Teacher Account</h3>
+    <p stlye="color:blue;"> After you create account, <b>ADMIN</b> must <b>APPROVE</b> you  before you can login. This stops students from faking as teachers.</p>
+    <input id="tRegName" placeholder="Teacher Name e.g. JWB NKUNIKA">
+    <label><b>Which Classes Do You Teach? Tick all:</b></label>
+    <div class="check-row">
+      <label><input type="checkbox" class="tClass" value="1"> Form 1</label>
+      <label><input type="checkbox" class="tClass" value="2"> Form 2</label>
+      <label><input type="checkbox" class="tClass" value="3"> Form 3</label>
+      <label><input type="checkbox" class="tClass" value="4"> Form 4</label>
+    </div>
+    <label><b>Which Subjects Do You Teach? (Separate with comma)</b></label>
+    <input id="tRegSubject" placeholder="English, Mathematics, Biology">
+    <input id="tRegPin" type="password" placeholder="Create Your Password (4-8)">
+    <button class="btn-green" onclick="registerTeacher()">Create Teacher Account - Wait For Approval</button>
+    <p style="text-align:center;">Already have account? <a href="#" onclick="showTeacherLogin();return false;">Login Here</a></p>
+  </div>
+  <div id="teacherLoginBox" class="hidden">
+    <h3>Teacher Login</h3>
+    <p style="color:blue;">ONLY APPROVED TEACHERS CAN LOGIN.</p>
+    <input id="tName" placeholder="Teacher Name">
+    <input id="tPin" type="password" placeholder="Your Password">
+    <button class="btn-green" onclick="loginTeacher()">Login as Teacher</button>
+    <p style="text-align:center;">No account? <a href="#" onclick="showTeacherRegister();return false;">Create Account</a></p>
+  </div>
+</div>
+
+<!-- ADMIN - HARD CODED PASSWORD, NAME IS CREATED -->
+<div id="tab-admin" class="card hidden">
+  <h2>🔐ADMIN PORTAL</h2>
+  <p style="color:blue;">ADMIN ONLY.</p>
+  <input id="aName" placeholder="Enter Admin name e.g Headteacher">
+  <input id="aPin" type="password" placeholder="Admin Password">
+  <button class="btn-orange" onclick="loginAdmin()">Login as Admin</button>
+  <p style="text-align:center;">Do not share the password with students</p>
+</div>
+
+<div id="studentDashboard" class="card hidden">
+  <h3>Welcome <span id="stuName"></span> 👋</h3>
+  <p>Form <span id="stuForm"></span> | Exam: <span id="stuExam"></span></p>
+  <div class="term-tabs">
+    <button id="stuTerm1Btn" class="active" onclick="setStudentTerm('Term 1')">TERM 1</button>
+    <button id="stuTerm2Btn" onclick="setStudentTerm('Term 2')">TERM 2</button>
+    <button id="stuTerm3Btn" onclick="setStudentTerm('Term 3')">TERM 3</button>
+  </div>
+  <div id="studentResults"></div>
+  <button class="btn-red" onclick="logout()">Logout</button>
+</div>
+
+<div id="teacherDashboard" class="card hidden">
+  <h3>Teacher Dashboard - <span id="teacherNameLabel"></span> ✅ Approved</h3>
+  <p style="color:blue;">Registered as: <b><span id="teacherInfoLabel"></span></b><br>But you can change below anytime - teachers change subjects.</p>
+  <div class="choose-box">
+    <h3>📝 Step 1: Choose What You Are Entering Now</h3>
+    <label><b>1. CHOOSE TERM:</b></label>
+    <select id="enterTerm"><option>Term 1</option><option>Term 2</option><option>Term 3</option></select>
+    <label><b>2. CHOOSE CLASS:</b></label>
+    <select id="enterClass"><option value="1">Form 1</option><option value="2">Form 2</option><option value="3">Form 3</option><option value="4">Form 4</option></select>
+    <label><b>3. CHOOSE SUBJECT:</b></label>
+    <select id="enterSubject"><option>English</option><option>Mathematics</option><option>Biology</option><option>Chemistry</option><option>Physics</option><option>Geography</option><option>History</option><option>Agriculture</option><option>Chichewa</option><option>Life Skills</option><option>Computer</option><option>Additional Maths</option><option>Bible Knowledge</option><option>Social Studies</option></select>
+    <p class="small" id="chosenSummary" style="color:#0b2a4a;font-weight:bold">You are entering: Term 1 | Form 1 | English</p>
+  </div>
+  <h3>Step 2: Type Student + Mark</h3>
+  <input id="enterExamNo" placeholder="Type Student Exam Number e.g. S001" oninput="autoFillStudentName(this.value)">
+  <input id="enterStudentName" placeholder="Type Student Name e.g. John Phiri">
+  <p class="small" id="studentCheckMsg"></p>
+  <input id="enterMark" type="number" min="0" max="100" placeholder="Mark 0-100">
+  <button class="btn-green" onclick="saveResult()">Save Result</button>
+  <p class="small" id="saveMsg"></p>
+  <button class="btn-red" onclick="logout()">Logout</button>
+</div>
+
+<div id="adminDashboard" class="hidden">
+  <div class="card">
+    <h3>THE SCHOOL DASHBOARD - <span id="adminNameLabel"></span></h3>
+    <p><b>View Dashboard For:</b></p>
+    <select id="adminTermFilter" onchange="refreshAdmin()"><option>Term 1</option><option>Term 2</option><option>Term 3</option></select>
+    <div class="grid" style="margin-top:10px">
+      <div class="stat"><b id="totalStudents">0</b>Total Students</div>
+      <div class="stat"><b id="totalTeachers">0</b>Total Teachers</div>
+      <div class="stat"><b id="totalSubjects">0</b>Results Entered (<span id="totalTermLabel">Term 1</span>)</div>
+      <div class="stat"><b>4</b>Classes</div>
+    </div>
+    <div style="margin-top:12px;border:2px dashed #c0392b;padding:12px;border-radius:10px">
+      <h3 style="color:#c0392b">⚠️ Reset Results</h3>
+      <p style="color:blue;">This will DELETE all results for the selected Term only. Students will NOT be deleted.</p>
+      <button class="btn-red" onclick="resetResults()">🔄 RESET Results for Selected Term</button>
+      <button style="background:#333;color:#fff;margin-top:6px" onclick="resetAllResults()">🗑️ RESET ALL Results (All Terms)</button>
+    </div>
+  </div>
+
+  <!-- ADMIN APPROVES TEACHERS -->
+  <div class="card" style="border:2px solid #e67e22">
+    <h3>✅ Approve Teachers - Stop Fake Teachers</h3>
+    <p style="color:white;">NEW TEACHERS ARE PENDING. ONLY APPROVE IF YOU KNOW THEY ARE REAL TEACHERS. IF IT IS A STUDENT FAKING, click REJECT.</p>
+    <div id="pendingTeachersList"></div>
+  </div>
+
+  <div class="card">
+    <h3> All Teachers</h3>
+    <div id="allTeachersList"></div>
+  </div>
+  <div class="card">
+    <h3>Every Class Separate - <span id="classTermLabel">Term 1</span></h3>
+    <div class="grid4" id="classCards"></div>
+  </div>
+  <div class="card">
+    <h3>🏆 Best & Poor Performing Class - <span id="bestPoorTermLabel">Term 1</span></h3>
+    <div class="grid">
+      <div class="stat best"><b id="bestClassName">-</b><span id="bestClassDetail">No data</span><br>🏆 BEST CLASS</div>
+      <div class="stat poor"><b id="poorClassName">-</b><span id="poorClassDetail">No data</span><br>⚠️ NEEDS SUPPORT</div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>👥 All Students</h3>
+    <div id="allStudentsList"></div>
+  </div>
+  <div class="card">
+    <h3>✍️ Admin Can Also Enter Results</h3>
+    <label><b>TERM:</b></label>
+    <select id="adminEnterTerm"><option>Term 1</option><option>Term 2</option><option>Term 3</option></select>
+    <label><b>CLASS:</b></label>
+    <select id="adminEnterClass"><option value="1">Form 1</option><option value="2">Form 2</option><option value="3">Form 3</option><option value="4">Form 4</option></select>
+    <input id="adminEnterExam" placeholder="Type Student Exam Number e.g. S001">
+    <input id="adminEnterName" placeholder="Type Student Name">
+    <select id="adminEnterSubject"><option>English</option><option>Mathematics</option><option>Biology</option><option>Chemistry</option><option>Physics</option><option>Geography</option><option>History</option><option>Agriculture</option><option>Chichewa</option><option>Life Skills</option><option>Computer</option><option>Additional Maths</option><option>Bible Knowledge</option></select>
+    <input id="adminEnterMark" type="number" min="0" max="100" placeholder="Mark 0-100">
+    <button class="btn-green" onclick="saveResultAdmin()">Save Result (Admin)</button>
+  </div>
+  <button class="btn-red" onclick="logout()">Logout</button>
+</div>
+
+</div>
+
+<div class="footer">
+  <i>"WITH GOD'S HELP"</i>
+  <p><a href="#" onclick="showTab('student');window.scrollTo(0,0);return false;">Student</a> | <a href="#" onclick="showTab('teacher');window.scrollTo(0,0);return false;">Teacher</a> | <a href="#" onclick="showTab('admin');window.scrollTo(0,0);return false;">Admin</a></p>
+  <p class="small">&COPY; 2026 St Ignatius Exam Portal. All Rights Reserved.</p><hr/>
+  <p class="small">DEVELOPED BY RONALD RONNEX</p>
+  <br>
+  <p style="color:#fff;font-size:11px;background:#000;"><marquee>FOR MORE INFO: FACEBOOK: RONALD RONNEX | 📞CONTACTS/ WHATSAPP: +265990381488 | +265894608748 | Email✉: <a href="email"><i>ronaldmtafya6@gmail.com</i></a></p></marquee>
+</div>
+
+<script>
+// ===== ADMIN HARD CODED PASSWORD - CHANGE =====
+const ADMIN_PASSWORD = "IG2026/27SCHOOL";
+let students = JSON.parse(localStorage.getItem('ign_students')||'[]');
+let teachers = JSON.parse(localStorage.getItem('ign_teachers')||'[]');
+let results = JSON.parse(localStorage.getItem('ign_results')||'{}');
+let currentStudent=null; let currentStudentTerm='Term 1'; let currentTeacher=null;
+function saveData(){ localStorage.setItem('ign_students', JSON.stringify(students)); localStorage.setItem('ign_teachers', JSON.stringify(teachers)); localStorage.setItem('ign_results', JSON.stringify(results)); }
+async function hashPin(pin){ const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pin)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+function showTab(tab){
+  ['student','teacher','admin'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('hidden', t!==tab);
+    document.getElementById('btn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===tab);
+  });
+}
+function showStudentLogin(){ document.getElementById('studentRegisterBox').classList.add('hidden'); document.getElementById('studentLoginBox').classList.remove('hidden'); }
+function showStudentRegister(){ document.getElementById('studentLoginBox').classList.add('hidden'); document.getElementById('studentRegisterBox').classList.remove('hidden'); }
+function showTeacherLogin(){ document.getElementById('teacherRegisterBox').classList.add('hidden'); document.getElementById('teacherLoginBox').classList.remove('hidden'); }
+function showTeacherRegister(){ document.getElementById('teacherLoginBox').classList.add('hidden'); document.getElementById('teacherRegisterBox').classList.remove('hidden'); }
+function getMarksForTerm(examNo, term){
+  let all = results[examNo] || {};
+  if(all["Term 1"] || all["Term 2"] || all["Term 3"]) return all[term] || {};
+  if(term==="Term 1") return all;
+  return {};
+}
+function getFormNumber(f){ let n=parseInt(String(f).replace(/[^0-9]/g,"")); return isNaN(n)?1:n; }
+// ===== GRADING SYSTEM =====
+// Form 1 & 2: A-F | Form 3 & 4: 1-9
+function getGrade(formValue, mark){
+  let form=getFormNumber(formValue); let s=Number(mark); if(isNaN(s)) return "-";
+  if(form===1||form===2){
+    if(s>=80) return "A"; if(s>=70) return "B"; if(s>=60) return "C"; if(s>=50) return "D"; if(s>=40) return "E"; return "F";
+  } else {
+    if(s>=90) return "1"; if(s>=80) return "2"; if(s>=70) return "3"; if(s>=60) return "4"; if(s>=50) return "5"; if(s>=40) return "6"; if(s>=30) return "7"; if(s>=20) return "8"; return "9";
+  }
+}
+function gradeToPoints(form, grade){
+  if(form===1||form===2){ let m={"A":1,"B":2,"C":3,"D":4,"E":5,"F":6}; return m[grade]||6; }
+  return Number(grade)||9;
+}
+function getBest6(formValue, marksObj){
+  let form=getFormNumber(formValue);
+  let list=Object.entries(marksObj).map(([sub,mark])=>({subject:sub,mark:Number(mark),grade:getGrade(form,mark)}));
+  if(form===1||form===2){
+    // Form 1 & 2: NO Best 6 - Show ALL Subjects Random
+    let shuffled=[...list].sort(()=>Math.random()-0.5);
+    let total=shuffled.reduce((s,x)=>s+gradeToPoints(form,x.grade),0);
+    return {best:shuffled,totalPoints:null,display:shuffled.map(x=>x.subject+": "+x.grade).join(", "), avgPoints: shuffled.length? total/shuffled.length : 999};
+  } else {
+    // Form 3 & 4: Best 6 - Lowest points is best
+    list.sort((a,b)=>Number(a.grade)-Number(b.grade));
+    let best=list.slice(0,6);
+    let total=best.reduce((sum,x)=>sum+Number(x.grade),0);
+    return {best,totalPoints:total,display:best.map(x=>x.subject+": "+x.grade).join(", "), avgPoints: best.length? total/best.length : 999};
+  }
+}
+async function registerStudent(){
+  let name=document.getElementById('sName').value.trim();
+  let exam=document.getElementById('sExam').value.trim().toUpperCase();
+  let form=document.getElementById('sForm').value;
+  let pin=document.getElementById('sPin').value.trim();
+  if(!name||!exam||!pin) return alert("Fill Name, Exam No and PIN");
+  if(pin.length<4||pin.length>8||!/^\d+$/.test(pin)) return alert("Student PIN must be 4-8 NUMBERS");
+  if(students.find(s=>s.examNo===exam)) return alert("Exam Number already exists");
+  students.push({name,examNo:exam,form,pinHash:await hashPin(pin)});
+  saveData();
+  document.getElementById('sLoginExam').value=exam;
+  showStudentLogin();
+  document.getElementById('studentMsg').innerText="✅ Account created! Now login with your PIN.";
+  alert("Account created! Now login with your PIN.");
+}
+async function loginStudent(){
+  let exam=document.getElementById('sLoginExam').value.trim().toUpperCase();
+  let pin=document.getElementById('sLoginPin').value.trim();
+  let stu=students.find(s=>s.examNo===exam);
+  if(!stu) return alert("Student not found");
+  if(await hashPin(pin)!==stu.pinHash) return alert("Wrong PIN");
+  currentStudent=stu; currentStudentTerm='Term 1';
+  document.querySelectorAll('#tab-student,#tab-teacher,#tab-admin').forEach(e=>e.classList.add('hidden'));
+  document.getElementById('mainButtons').classList.add('hidden');
+  document.getElementById('studentDashboard').classList.remove('hidden');
+  document.getElementById('stuName').innerText=stu.name;
+  document.getElementById('stuForm').innerText=stu.form;
+  document.getElementById('stuExam').innerText=stu.examNo;
+  renderStudentResults();
+}
+function setStudentTerm(term){
+  currentStudentTerm=term;
+  ['Term 1','Term 2','Term 3'].forEach((t,i)=>{ document.getElementById('stuTerm'+(i+1)+'Btn').classList.toggle('active', t===term); });
+  renderStudentResults();
+}
+function renderStudentResults(){
+  let stu=currentStudent;
+  let myRes=getMarksForTerm(stu.examNo, currentStudentTerm);
+  let best=getBest6(stu.form, myRes);
+  let html=`<h3>Your Results - ${currentStudentTerm}</h3>`;
+  if(Object.keys(myRes).length===0) html+=`<p>No results yet for ${currentStudentTerm}.</p>`;
+  else {
+    html+="<table><tr><th>Subject</th><th>Mark</th><th>Grade</th></tr>";
+    for(let sub in myRes) html+=`<tr><td>${sub}</td><td>${myRes[sub]}</td><td><b>${getGrade(stu.form,myRes[sub])}</b></td></tr>`;
+    html+="</table><br>";
+    if(stu.form=="1"||stu.form=="2"){ html+=`<b>All Subjects (Random Order):</b> ${best.display}<br><span class='badge'>Form 1 & 2 - No Best 6</span>`; }
+    else { html+=`<b>Best 6 (${currentStudentTerm}):</b> ${best.display}<br><br><span class='badge'>Total Points (Best 6): ${best.totalPoints}</span>`; }
+  }
+  document.getElementById('studentResults').innerHTML=html;
+}
+// ===== TEACHER - NEEDS ADMIN APPROVAL =====
+async function registerTeacher(){
+  let name=document.getElementById('tRegName').value.trim();
+  let subjectText=document.getElementById('tRegSubject').value.trim();
+  let pin=document.getElementById('tRegPin').value.trim();
+  let classes=[...document.querySelectorAll('.tClass:checked')].map(c=>c.value);
+  if(!name||!subjectText||!pin) return alert("Fill Name, Subject and Password");
+  if(classes.length===0) return alert("Tick at least ONE class you teach");
+  if(pin.length<4||pin.length>8) return alert("Teacher Password must be 4-8 characters");
+  if(teachers.find(t=>t.name.toLowerCase()===name.toLowerCase())) return alert("Teacher already exists");
+  let subjects=subjectText.split(",").map(s=>s.trim()).filter(s=>s);
+  // New teacher is PENDING - cannot login until Admin approves
+  teachers.push({name, subjects, classes, pinHash:await hashPin(pin), status:"Pending"});
+  saveData(); showTeacherLogin();
+  document.getElementById('tName').value=name;
+  alert("Teacher account created! Status: PENDING.\n\nWait for Admin to APPROVE you before you can login. This stops students from faking as teachers.");
+}
+async function loginTeacher(){
+  let name=document.getElementById('tName').value.trim();
+  let pin=document.getElementById('tPin').value.trim();
+  let tea=teachers.find(t=>t.name.toLowerCase()===name.toLowerCase());
+  if(!tea) return alert("Teacher not found. Create account first.");
+  if(await hashPin(pin)!==tea.pinHash) return alert("Wrong Password");
+  // CHECK APPROVAL
+  if(tea.status!=="Approved") return alert("⛔ You are NOT approved yet!\n\nStatus: "+(tea.status||"Pending")+"\n\nWait for Admin to approve you. Ask Admin / Headteacher to approve you in Admin Dashboard.");
+  currentTeacher=tea;
+  document.querySelectorAll('#tab-student,#tab-teacher,#tab-admin').forEach(e=>e.classList.add('hidden'));
+  document.getElementById('mainButtons').classList.add('hidden');
+  document.getElementById('teacherDashboard').classList.remove('hidden');
+  document.getElementById('teacherNameLabel').innerText=tea.name;
+  document.getElementById('teacherInfoLabel').innerText=`Form ${tea.classes.join(", Form ")} - ${tea.subjects.join(", ")} (You can change below)`;
+  updateChosenSummary();
+  ['enterTerm','enterClass','enterSubject'].forEach(id=>{ document.getElementById(id).onchange = updateChosenSummary; });
+}
+function updateChosenSummary(){
+  let term=document.getElementById('enterTerm').value;
+  let cls=document.getElementById('enterClass').value;
+  let sub=document.getElementById('enterSubject').value;
+  document.getElementById('chosenSummary').innerText=`You are entering: ${term} | Form ${cls} | ${sub}`;
+}
+function autoFillStudentName(examNo){
+  let stu=students.find(s=>s.examNo===examNo.trim().toUpperCase());
+  if(stu){ 
+    document.getElementById('enterStudentName').value=stu.name; 
+    let selectedClass=document.getElementById('enterClass').value;
+    if(String(stu.form)!==String(selectedClass)) document.getElementById('studentCheckMsg').innerText="⚠️ Warning: This student is Form "+stu.form+" but you selected Form "+selectedClass;
+    else document.getElementById('studentCheckMsg').innerText="✅ Found: "+stu.name+" - Form "+stu.form;
+  }
+  else if(examNo.trim().length>2){ document.getElementById('studentCheckMsg').innerText="⚠️ Student not found"; }
+  else document.getElementById('studentCheckMsg').innerText="";
+}
+function saveResult(){
+  let term=document.getElementById('enterTerm').value;
+  let selectedClass=document.getElementById('enterClass').value;
+  let exam=document.getElementById('enterExamNo').value.trim().toUpperCase();
+  let typedName=document.getElementById('enterStudentName').value.trim();
+  let sub=document.getElementById('enterSubject').value;
+  let mark=document.getElementById('enterMark').value;
+  if(!exam||!typedName||mark==="") return alert("Type Exam Number, Name and Mark");
+  let stu=students.find(s=>s.examNo===exam);
+  if(!stu) return alert("Student not found.");
+  if(stu.name.toLowerCase()!==typedName.toLowerCase()) return alert("Name does not match! Found: "+stu.name);
+  if(String(stu.form)!==String(selectedClass)) return alert("This student is Form "+stu.form+", you selected Form "+selectedClass);
+  if(!results[exam]) results[exam]={};
+  if(!results[exam][term]) results[exam][term]={};
+  results[exam][term][sub]=Number(mark); saveData();
+  document.getElementById('saveMsg').innerText=`Saved: ${stu.name} (Form ${stu.form}) - ${term} - ${sub} = ${mark} -> Grade ${getGrade(stu.form,mark)} by ${currentTeacher.name}`;
+  document.getElementById('enterMark').value="";
+}
+// ===== ADMIN - HARD CODED PASSWORD, NAME IS CREATED =====
+function loginAdmin(){
+  let name=document.getElementById('aName').value.trim();
+  let pin=document.getElementById('aPin').value.trim();
+  if(!name) return alert("Type your Admin Name first!");
+  if(!pin) return alert("Type Admin Password");
+  if(pin!==ADMIN_PASSWORD) return alert("Wrong Admin Password!");
+  document.querySelectorAll('#tab-student,#tab-teacher,#tab-admin').forEach(e=>e.classList.add('hidden'));
+  document.getElementById('mainButtons').classList.add('hidden');
+  document.getElementById('adminDashboard').classList.remove('hidden');
+  document.getElementById('adminNameLabel').innerText=name;
+  refreshAdmin();
+}
+function approveTeacher(idx){
+  teachers[idx].status="Approved"; saveData(); refreshAdmin(); alert("Approved! "+teachers[idx].name+" can now login as teacher.");
+}
+function rejectTeacher(idx){
+  if(!confirm("Reject and DELETE this teacher? This might be a student faking.")) return;
+  teachers.splice(idx,1); saveData(); refreshAdmin(); alert("Teacher rejected and deleted.");
+}
+function refreshAdmin(){
+  let term=document.getElementById('adminTermFilter').value;
+  document.getElementById('totalTermLabel').innerText=term;
+  document.getElementById('classTermLabel').innerText=term;
+  document.getElementById('bestPoorTermLabel').innerText=term;
+  document.getElementById('totalStudents').innerText=students.length;
+  document.getElementById('totalTeachers').innerText=teachers.filter(t=>t.status==="Approved").length;
+  let c=0; students.forEach(s=>{ c+=Object.keys(getMarksForTerm(s.examNo, term)).length; });
+  document.getElementById('totalSubjects').innerText=c;
+  // Pending teachers
+  let pending=teachers.map((t,i)=>({t,i})).filter(x=>x.t.status!=="Approved");
+  let pHtml="";
+  if(pending.length===0) pHtml="<p>✅ No pending teachers. All teachers approved.</p>";
+  else {
+    pHtml="<table><tr><th>Teacher Name</th><th>Subjects</th><th>Classes</th><th>Status</th><th>Action</th></tr>";
+    pending.forEach(({t,i})=>{
+      pHtml+=`<tr><td><b>${t.name}</b></td><td>${t.subjects.join(", ")}</td><td>Form ${t.classes.join(", Form ")}</td><td>⏳ Pending</td><td><button style="background:green;color:#fff;padding:6px" onclick="approveTeacher(${i})">Approve</button> <button style="background:#c0392b;color:#fff;padding:6px" onclick="rejectTeacher(${i})">Reject</button></td></tr>`;
+    });
+    pHtml+="</table>";
+  }
+  document.getElementById('pendingTeachersList').innerHTML=pHtml;
+  let tHtml="";
+  if(teachers.length===0) tHtml="<p>No teachers registered yet.</p>";
+  else {
+    tHtml="<table><tr><th>Teacher Name</th><th>Subjects</th><th>Classes</th><th>Status</th></tr>";
+    teachers.forEach(t=>{ tHtml+=`<tr><td><b>${t.name}</b></td><td>${t.subjects.join(", ")}</td><td>Form ${t.classes.join(", Form ")}</td><td>${t.status==="Approved" ? "✅ Approved" : "⏳ Pending"}</td></tr>`; });
+    tHtml+="</table>";
+  }
+  document.getElementById('allTeachersList').innerHTML=tHtml;
+  let classStats=[]; let cardsHtml="";
+  for(let form of ["1","2","3","4"]){
+    let classStudents=students.filter(s=>String(s.form)===form);
+    let bestStudent=null; let bestAvg=999; let classAvgSum=0; let classAvgCount=0;
+    classStudents.forEach(s=>{
+      let myRes=getMarksForTerm(s.examNo, term);
+      if(Object.keys(myRes).length>0){
+        let best=getBest6(s.form, myRes);
+        classAvgSum+=best.avgPoints; classAvgCount++;
+        if(best.avgPoints<bestAvg){ bestAvg=best.avgPoints; bestStudent={name:s.name,exam:s.examNo,total:best.totalPoints,display:best.display}; }
+      }
+    });
+    let classAvg=classAvgCount? (classAvgSum/classAvgCount) : 999;
+    classStats.push({form,total:classStudents.length,bestStudent,avg:classAvg});
+    cardsHtml+=`<div class="class-card"><h3>Form ${form} - ${term}</h3><p><b>Total Students:</b> ${classStudents.length}</p><p><b>Best Student:</b><br>${bestStudent ? `${bestStudent.name} (${bestStudent.exam})<br><span class='small'>${bestStudent.display}</span><br><b>${form=="1"||form=="2" ? "All Subjects (Random)" : "Points: "+bestStudent.total}</b>` : "No results yet for "+term}</p><p class="small">Class Average: ${classAvg===999 ? "-" : classAvg.toFixed(2)+" (Lower is better)"}</p></div>`;
+  }
+  document.getElementById('classCards').innerHTML=cardsHtml;
+  let withData=classStats.filter(cs=>cs.avg!==999);
+  if(withData.length>0){
+    withData.sort((a,b)=>a.avg-b.avg);
+    let bestC=withData[0]; let poorC=withData[withData.length-1];
+    document.getElementById('bestClassName').innerText="Form "+bestC.form;
+    document.getElementById('bestClassDetail').innerText=`${term} | Avg: ${bestC.avg.toFixed(2)} | Students: ${bestC.total}`;
+    document.getElementById('poorClassName').innerText="Form "+poorC.form;
+    document.getElementById('poorClassDetail').innerText=`${term} | Avg: ${poorC.avg.toFixed(2)} | Students: ${poorC.total}`;
+  } else { document.getElementById('bestClassName').innerText="-"; document.getElementById('poorClassName').innerText="-"; }
+  let html="";
+  if(students.length===0) html="<p>No students yet.</p>";
+  else {
+    html=`<table><tr><th>Name</th><th>Exam</th><th>Form</th><th>PIN</th><th>Results (${term})</th></tr>`;
+    students.forEach(s=>{
+      let myRes=getMarksForTerm(s.examNo, term);
+      let best=getBest6(s.form,myRes);
+      let bestText=Object.keys(myRes).length? best.display+(s.form=="3"||s.form=="4"?` | Points: ${best.totalPoints}`:" (All - Random)"):"No results for "+term;
+      html+=`<tr><td>${s.name}</td><td>${s.examNo}</td><td>${s.form}</td><td>****</td><td>${bestText}</td></tr>`;
+    });
+    html+="</table>";
+  }
+  document.getElementById('allStudentsList').innerHTML=html;
+}
+function resetResults(){
+  let term=document.getElementById('adminTermFilter').value;
+  if(!confirm("ARE YOU SURE WANT TO DELETE ALL RESULTS FOR "+term+"?")) return;
+  for(let exam in results){ if(results[exam][term]) delete results[exam][term]; }
+  saveData(); refreshAdmin(); alert("RESULTS FOR "+term+" HAVE BEEN RESET!");
+}
+function resetAllResults(){
+  if(!confirm("ARE YOU SURE YOU WANT TO DELETE ALL RESULTS FOR ALL TERMS?")) return;
+  results={}; saveData(); refreshAdmin(); alert("All results deleted!");
+}
+function saveResultAdmin(){
+  let term=document.getElementById('adminEnterTerm').value;
+  let cls=document.getElementById('adminEnterClass').value;
+  let exam=document.getElementById('adminEnterExam').value.trim().toUpperCase();
+  let typedName=document.getElementById('adminEnterName').value.trim();
+  let sub=document.getElementById('adminEnterSubject').value;
+  let mark=document.getElementById('adminEnterMark').value;
+  if(!exam||!typedName||mark==="") return alert("Type Exam Number, Name and Mark");
+  let stu=students.find(s=>s.examNo===exam);
+  if(!stu) return alert("Student not found");
+  if(stu.name.toLowerCase()!==typedName.toLowerCase()) return alert("Name does not match! Found: "+stu.name);
+  if(String(stu.form)!==String(cls)) return alert("Student is Form "+stu.form+", you selected Form "+cls);
+  if(!results[exam]) results[exam]={};
+  if(!results[exam][term]) results[exam][term]={};
+  results[exam][term][sub]=Number(mark); saveData(); refreshAdmin(); alert("Saved by Admin for "+term);
+}
+function logout(){ location.reload(); }
+</script>
+</body>
+</html>
