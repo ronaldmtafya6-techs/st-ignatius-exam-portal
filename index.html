@@ -41,20 +41,27 @@
   .footer p{margin:5px 0;font-size:14px;opacity:.95}
   .footer a{color:#blue;text-decoration:none;font-weight:bold;background:#fff;}
   .footer .small{font-size:12px;opacity:.7}
-
- .diocese-pop {
+.diocese-pop {
   display: inline-block;
-  animation: diocesePop 1.8s ease-in-out infinite;
+  transform-origin: center bottom;
+  animation: diocesePop 1.2s ease-in-out infinite;
 }
 
 @keyframes diocesePop {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    text-shadow: none;
+  }
+  35% {
+    transform: translateY(-12px) scale(1.2);
+    text-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
+  }
+  60% {
+    transform: translateY(0) scale(0.98);
+    text-shadow: none;
+  }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .diocese-pop { animation: none; }
-}
+ 
 </style>
 </head>
 <body>
