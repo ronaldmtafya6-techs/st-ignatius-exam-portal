@@ -41,13 +41,13 @@
   .footer p{margin:5px 0;font-size:14px;opacity:.95}
   .footer a{color:#blue;text-decoration:none;font-weight:bold;background:#fff;}
   .footer .small{font-size:12px;opacity:.7}
-.diocese-pop {
+.withgod-pop {
   display: inline-block;
   transform-origin: center bottom;
-  animation: diocesePop 1.2s ease-in-out infinite;
+  animation: withgodPop 1.2s ease-in-out infinite;
 }
 
-@keyframes diocesePop {
+@keyframes withgod{
   0%, 100% {
     transform: translateY(0) scale(1);
     text-shadow: none;
@@ -69,8 +69,8 @@
 <div class="header">
   <p style="background:#777;color:#fff;width:3.5cm;"><marquee direction="right">WELCOME!</marquee></p><br>
   <h1>ST. IGNATIUS OF LOYOLA BOARDING SEC SCHOOL</h1>
-  <span class="motto"><b><i>"WITH GOD'S HELP"</i></b></span>
-  <p style="background:#fff;color:#000;font-family:arabic">📍CHITIPA, NTHALIRE <br>Post Office Box 2<br><br><b class="diocese-pop">THE DIOCESE OF KARONGA</b></p><br>
+  <span class="motto"><b class="withgod-pop">"WITH GOD'S HELP"</b></span>
+  <p style="background:#fff;color:#000;font-family:arabic">📍CHITIPA, NTHALIRE <br>Post Office Box 2<br><br><b></b>THE DIOCESE OF KARONGA</b></p><br>
   <p style="background:aqua;color:#000;font-weight:bold;font-family:russian;">EXAMINATION  PORTAL</p>
 </div>
 
@@ -224,7 +224,7 @@
     <div id="allStudentsList"></div>
   </div>
   <div class="card">
-    <h3>✍️ Admin Can Also Enter Results</h3>
+    <h3>Admin Can Also Enter Results</h3>
     <label><b>TERM:</b></label>
     <select id="adminEnterTerm"><option>Term 1</option><option>Term 2</option><option>Term 3</option></select>
     <label><b>CLASS:</b></label>
@@ -286,6 +286,5 @@ function clearAllSchoolData(){ if(!confirm("This will permanently delete ALL stu
 function saveResultAdmin(){ let term=document.getElementById('adminEnterTerm').value;let cls=document.getElementById('adminEnterClass').value;let exam=document.getElementById('adminEnterExam').value.trim().toUpperCase();let typedName=document.getElementById('adminEnterName').value.trim();let sub=document.getElementById('adminEnterSubject').value;let mark=document.getElementById('adminEnterMark').value;if(!exam||!typedName||mark==="")return alert("Type Exam Number, Name and Mark");let stu=students.find(s=>s.examNo===exam);if(!stu)return alert("Student not found");if(stu.name.toLowerCase()!==typedName.toLowerCase())return alert("Name does not match! Found: "+stu.name);if(String(stu.form)!==String(cls))return alert("Student is Form "+stu.form+", you selected Form "+cls);if(!results[exam])results[exam]={};if(!results[exam][term])results[exam][term]={};results[exam][term][sub]=Number(mark);saveData();refreshAdmin();alert("Saved by Admin for "+term); }
 function logout(){location.reload();}
 </script>
-<script src="welcome-animation.js"></script>
 </body>
 </html>
