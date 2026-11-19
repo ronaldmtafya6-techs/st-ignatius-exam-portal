@@ -41,6 +41,20 @@
   .footer p{margin:5px 0;font-size:14px;opacity:.95}
   .footer a{color:#blue;text-decoration:none;font-weight:bold;background:#fff;}
   .footer .small{font-size:12px;opacity:.7}
+
+ .diocese-pop {
+  display: inline-block;
+  animation: diocesePop 1.8s ease-in-out infinite;
+}
+
+@keyframes diocesePop {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diocese-pop { animation: none; }
+}
 </style>
 </head>
 <body>
@@ -49,7 +63,7 @@
   <p style="background:#777;color:#fff;width:3.5cm;"><marquee direction="right">WELCOME!</marquee></p><br>
   <h1>ST. IGNATIUS OF LOYOLA BOARDING SEC SCHOOL</h1>
   <span class="motto"><b><i>"WITH GOD'S HELP"</i></b></span>
-  <p style="background:#fff;color:#000;font-family:arabic">📍CHITIPA, NTHALIRE <br>Post Office Box 2<br><br><b>THE DIOCESE OF KARONGA</b></p><br>
+  <p style="background:#fff;color:#000;font-family:arabic">📍CHITIPA, NTHALIRE <br>Post Office Box 2<br><br><b class="diocese-pop">THE DIOCESE OF KARONGA</b></p><br>
   <p style="background:aqua;color:#000;font-weight:bold;font-family:russian;">EXAMINATION  PORTAL</p>
 </div>
 
