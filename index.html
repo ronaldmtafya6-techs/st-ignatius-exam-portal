@@ -256,41 +256,833 @@
 </div>
 
 <script>
+
 const ADMIN_PASSWORD = "IG2026/27SCHOOL";
-let students = JSON.parse(localStorage.getItem('ign_students')||'[]');
-let teachers = JSON.parse(localStorage.getItem('ign_teachers')||'[]');
-let results = JSON.parse(localStorage.getItem('ign_results')||'{}');
-let currentStudent=null; let currentStudentTerm='Term 1'; let currentTeacher=null;
-function saveData(){ localStorage.setItem('ign_students', JSON.stringify(students)); localStorage.setItem('ign_teachers', JSON.stringify(teachers)); localStorage.setItem('ign_results', JSON.stringify(results)); }
-async function hashPin(pin){ const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pin)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
-function showTab(tab){ ['student','teacher','admin'].forEach(t=>{ document.getElementById('tab-'+t).classList.toggle('hidden', t!==tab); document.getElementById('btn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===tab); }); }
-function showStudentLogin(){ document.getElementById('studentRegisterBox').classList.add('hidden'); document.getElementById('studentLoginBox').classList.remove('hidden'); }
-function showStudentRegister(){ document.getElementById('studentLoginBox').classList.add('hidden'); document.getElementById('studentRegisterBox').classList.remove('hidden'); }
-function showTeacherLogin(){ document.getElementById('teacherRegisterBox').classList.add('hidden'); document.getElementById('teacherLoginBox').classList.remove('hidden'); }
-function showTeacherRegister(){ document.getElementById('teacherLoginBox').classList.add('hidden'); document.getElementById('teacherRegisterBox').classList.remove('hidden'); }
-function getMarksForTerm(examNo, term){ let all=results[examNo]||{}; if(all["Term 1"]||all["Term 2"]||all["Term 3"]) return all[term]||{}; if(term=== "Term 1") return all; return {}; }
-function getFormNumber(f){ let n=parseInt(String(f).replace(/[^0-9]/g,"")); return isNaN(n)?1:n; }
-function getGrade(formValue, mark){ let form=getFormNumber(formValue); let s=Number(mark); if(isNaN(s)) return "-"; if(form===1||form===2){ if(s>=80)return "A";if(s>=70)return "B";if(s>=60)return "C";if(s>=50)return "D";if(s>=40)return "E";return "F";} else {if(s>=90)return "1";if(s>=80)return "2";if(s>=70)return "3";if(s>=60)return "4";if(s>=50)return "5";if(s>=40)return "6";if(s>=30)return "7";if(s>=20)return "8";return "9";} }
-function gradeToPoints(form,grade){ if(form===1||form===2){let m={"A":1,"B":2,"C":3,"D":4,"E":5,"F":6};return m[grade]||6;}return Number(grade)||9; }
-function getBest6(formValue,marksObj){ let form=getFormNumber(formValue);let list=Object.entries(marksObj).map(([sub,mark])=>({subject:sub,mark:Number(mark),grade:getGrade(form,mark)}));if(form===1||form===2){let shuffled=[...list].sort(()=>Math.random()-0.5);let total=shuffled.reduce((s,x)=>s+gradeToPoints(form,x.grade),0);return {best:shuffled,totalPoints:null,display:shuffled.map(x=>x.subject+": "+x.grade).join(", "),avgPoints:shuffled.length?total/shuffled.length:999};}else{list.sort((a,b)=>Number(a.grade)-Number(b.grade));let best=list.slice(0,6);let total=best.reduce((sum,x)=>sum+Number(x.grade),0);return {best,totalPoints:total,display:best.map(x=>x.subject+": "+x.grade).join(", "),avgPoints:best.length?total/best.length:999};}}
-async function registerStudent(){ let name=document.getElementById('sName').value.trim();let exam=document.getElementById('sExam').value.trim().toUpperCase();let form=document.getElementById('sForm').value;let pin=document.getElementById('sPin').value.trim();if(!name||!exam||!pin)return alert("Fill Name, Exam No and PIN");if(pin.length<4||pin.length>8||!/^\d+$/.test(pin))return alert("Student PIN must be 4-8 NUMBERS");if(students.find(s=>s.examNo===exam))return alert("Exam Number already exists");students.push({name,examNo:exam,form,pinHash:await hashPin(pin)});saveData();document.getElementById('sLoginExam').value=exam;showStudentLogin();document.getElementById('studentMsg').innerText="✅ Account created! Now login with your PIN.";alert("Account created! Now login with your PIN."); }
-async function loginStudent(){ let exam=document.getElementById('sLoginExam').value.trim().toUpperCase();let pin=document.getElementById('sLoginPin').value.trim();let stu=students.find(s=>s.examNo===exam);if(!stu)return alert("Student not found");if(await hashPin(pin)!==stu.pinHash)return alert("Wrong PIN");currentStudent=stu;currentStudentTerm='Term 1';document.querySelectorAll('#tab-student,#tab-teacher,#tab-admin').forEach(e=>e.classList.add('hidden'));document.getElementById('mainButtons').classList.add('hidden');document.getElementById('studentDashboard').classList.remove('hidden');document.getElementById('stuName').innerText=stu.name;document.getElementById('stuForm').innerText=stu.form;document.getElementById('stuExam').innerText=stu.examNo;renderStudentResults(); }
-function setStudentTerm(term){ currentStudentTerm=term;['Term 1','Term 2','Term 3'].forEach((t,i)=>document.getElementById('stuTerm'+(i+1)+'Btn').classList.toggle('active',t===term));renderStudentResults(); }
-function renderStudentResults(){ let stu=currentStudent;let myRes=getMarksForTerm(stu.examNo,currentStudentTerm);let best=getBest6(stu.form,myRes);let html=`<h3>Your Results - ${currentStudentTerm}</h3>`;if(Object.keys(myRes).length===0)html+=`<p>No results yet for ${currentStudentTerm}.</p>`;else{html+="<table><tr><th>Subject</th><th>Mark</th><th>Grade</th></tr>";for(let sub in myRes)html+=`<tr><td>${sub}</td><td>${myRes[sub]}</td><td><b>${getGrade(stu.form,myRes[sub])}</b></td></tr>`;html+="</table><br>";if(stu.form=="1"||stu.form=="2")html+=`<b>All Subjects (Random Order):</b> ${best.display}<br><span class='badge'>Form 1 & 2 - No Best 6</span>`;else html+=`<b>Best 6 (${currentStudentTerm}):</b> ${best.display}<br><br><span class='badge'>Total Points (Best 6): ${best.totalPoints}</span>`;}document.getElementById('studentResults').innerHTML=html; }
-async function registerTeacher(){ let name=document.getElementById('tRegName').value.trim();let subjectText=document.getElementById('tRegSubject').value.trim();let pin=document.getElementById('tRegPin').value.trim();let classes=[...document.querySelectorAll('.tClass:checked')].map(c=>c.value);if(!name||!subjectText||!pin)return alert("Fill Name, Subject and Password");if(classes.length===0)return alert("Tick at least ONE class you teach");if(pin.length<4||pin.length>8)return alert("Teacher Password must be 4-8 characters");if(teachers.find(t=>t.name.toLowerCase()===name.toLowerCase()))return alert("Teacher already exists");let subjects=subjectText.split(",").map(s=>s.trim()).filter(s=>s);teachers.push({name,subjects,classes,pinHash:await hashPin(pin),status:"Pending"});saveData();showTeacherLogin();document.getElementById('tName').value=name;alert("Teacher account created! Status: PENDING.\n\nWait for Admin to APPROVE you before you can login. This stops students from faking as teachers."); }
-async function loginTeacher(){ let name=document.getElementById('tName').value.trim();let pin=document.getElementById('tPin').value.trim();let tea=teachers.find(t=>t.name.toLowerCase()===name.toLowerCase());if(!tea)return alert("Teacher not found. Create account first.");if(await hashPin(pin)!==tea.pinHash)return alert("Wrong Password");if(tea.status!=="Approved")return alert("⛔ You are NOT approved yet!\n\nStatus: "+(tea.status||"Pending")+"\n\nWait for Admin to approve you. Ask Admin / Headteacher to approve you in Admin Dashboard.");currentTeacher=tea;document.querySelectorAll('#tab-student,#tab-teacher,#tab-admin').forEach(e=>e.classList.add('hidden'));document.getElementById('mainButtons').classList.add('hidden');document.getElementById('teacherDashboard').classList.remove('hidden');document.getElementById('teacherNameLabel').innerText=tea.name;document.getElementById('teacherInfoLabel').innerText=`Form ${tea.classes.join(", Form ")} - ${tea.subjects.join(", ")} (You can change below)`;updateChosenSummary();['enterTerm','enterClass','enterSubject'].forEach(id=>document.getElementById(id).onchange=updateChosenSummary); }
-function updateChosenSummary(){ let term=document.getElementById('enterTerm').value;let cls=document.getElementById('enterClass').value;let sub=document.getElementById('enterSubject').value;document.getElementById('chosenSummary').innerText=`You are entering: ${term} | Form ${cls} | ${sub}`; }
-function autoFillStudentName(examNo){ let stu=students.find(s=>s.examNo===examNo.trim().toUpperCase());if(stu){document.getElementById('enterStudentName').value=stu.name;let selectedClass=document.getElementById('enterClass').value;if(String(stu.form)!==String(selectedClass))document.getElementById('studentCheckMsg').innerText="⚠️ Warning: This student is Form "+stu.form+" but you selected Form "+selectedClass;else document.getElementById('studentCheckMsg').innerText="✅ Found: "+stu.name+" - Form "+stu.form;}else if(examNo.trim().length>2)document.getElementById('studentCheckMsg').innerText="⚠️ Student not found";else document.getElementById('studentCheckMsg').innerText=""; }
-function saveResult(){ let term=document.getElementById('enterTerm').value;let selectedClass=document.getElementById('enterClass').value;let exam=document.getElementById('enterExamNo').value.trim().toUpperCase();let typedName=document.getElementById('enterStudentName').value.trim();let sub=document.getElementById('enterSubject').value;let mark=document.getElementById('enterMark').value;if(!exam||!typedName||mark==="")return alert("Type Exam Number, Name and Mark");let stu=students.find(s=>s.examNo===exam);if(!stu)return alert("Student not found.");if(stu.name.toLowerCase()!==typedName.toLowerCase())return alert("Name does not match! Found: "+stu.name);if(String(stu.form)!==String(selectedClass))return alert("This student is Form "+stu.form+", you selected Form "+selectedClass);if(!results[exam])results[exam]={};if(!results[exam][term])results[exam][term]={};results[exam][term][sub]=Number(mark);saveData();document.getElementById('saveMsg').innerText=`Saved: ${stu.name} (Form ${stu.form}) - ${term} - ${sub} = ${mark} -> Grade ${getGrade(stu.form,mark)} by ${currentTeacher.name}`;document.getElementById('enterMark').value=""; }
-function loginAdmin(){ let name=document.getElementById('aName').value.trim();let pin=document.getElementById('aPin').value.trim();if(!name)return alert("Type your Admin Name first!");if(!pin)return alert("Type Admin Password");if(pin!==ADMIN_PASSWORD)return alert("Wrong Admin Password!");document.querySelectorAll('#tab-student,#tab-teacher,#tab-admin').forEach(e=>e.classList.add('hidden'));document.getElementById('mainButtons').classList.add('hidden');document.getElementById('adminDashboard').classList.remove('hidden');document.getElementById('adminNameLabel').innerText=name;refreshAdmin(); }
-function approveTeacher(idx){ teachers[idx].status="Approved";saveData();refreshAdmin();alert("Approved! "+teachers[idx].name+" can now login as teacher."); }
-function rejectTeacher(idx){ if(!confirm("Reject and DELETE this teacher? This might be a student faking."))return;teachers.splice(idx,1);saveData();refreshAdmin();alert("Teacher rejected and deleted."); }
-function refreshAdmin(){ let term=document.getElementById('adminTermFilter').value;document.getElementById('totalTermLabel').innerText=term;document.getElementById('classTermLabel').innerText=term;document.getElementById('bestPoorTermLabel').innerText=term;document.getElementById('totalStudents').innerText=students.length;document.getElementById('totalTeachers').innerText=teachers.filter(t=>t.status==="Approved").length;let c=0;students.forEach(s=>c+=Object.keys(getMarksForTerm(s.examNo,term)).length);document.getElementById('totalSubjects').innerText=c;let pending=teachers.map((t,i)=>({t,i})).filter(x=>x.t.status!=="Approved");let pHtml="";if(pending.length===0)pHtml="<p>✅ No pending teachers. All teachers approved.</p>";else{pHtml="<table><tr><th>Teacher Name</th><th>Subjects</th><th>Classes</th><th>Status</th><th>Action</th></tr>";pending.forEach(({t,i})=>pHtml+=`<tr><td><b>${t.name}</b></td><td>${t.subjects.join(", ")}</td><td>Form ${t.classes.join(", Form ")}</td><td>⏳ Pending</td><td><button style="background:green;color:#fff;padding:6px" onclick="approveTeacher(${i})">Approve</button> <button style="background:#c0392b;color:#fff;padding:6px" onclick="rejectTeacher(${i})">Reject</button></td></tr>`);pHtml+="</table>";}document.getElementById('pendingTeachersList').innerHTML=pHtml;let tHtml="";if(teachers.length===0)tHtml="<p>No teachers registered yet.</p>";else{tHtml="<table><tr><th>Teacher Name</th><th>Subjects</th><th>Classes</th><th>Status</th></tr>";teachers.forEach(t=>tHtml+=`<tr><td><b>${t.name}</b></td><td>${t.subjects.join(", ")}</td><td>Form ${t.classes.join(", Form ")}</td><td>${t.status==="Approved"?"✅ Approved":"⏳ Pending"}</td></tr>`);tHtml+="</table>";}document.getElementById('allTeachersList').innerHTML=tHtml;let classStats=[];let cardsHtml="";for(let form of ["1","2","3","4"]){let classStudents=students.filter(s=>String(s.form)===form);let bestStudent=null;let bestAvg=999;let classAvgSum=0;let classAvgCount=0;classStudents.forEach(s=>{let myRes=getMarksForTerm(s.examNo,term);if(Object.keys(myRes).length>0){let best=getBest6(s.form,myRes);classAvgSum+=best.avgPoints;classAvgCount++;if(best.avgPoints<bestAvg){bestAvg=best.avgPoints;bestStudent={name:s.name,exam:s.examNo,total:best.totalPoints,display:best.display};}}});let classAvg=classAvgCount?(classAvgSum/classAvgCount):999;classStats.push({form,total:classStudents.length,bestStudent,avg:classAvg});cardsHtml+=`<div class="class-card"><h3>Form ${form} - ${term}</h3><p><b>Total Students:</b> ${classStudents.length}</p><p><b>Best Student:</b><br>${bestStudent?`${bestStudent.name} (${bestStudent.exam})<br><span class='small'>${bestStudent.display}</span><br><b>${form=="1"||form=="2"?"All Subjects (Random)":"Points: "+bestStudent.total}</b>`:"No results yet for "+term}</p><p class="small">Class Average: ${classAvg===999?"-":classAvg.toFixed(2)+" (Lower is better)"}</p></div>`;}document.getElementById('classCards').innerHTML=cardsHtml;let withData=classStats.filter(cs=>cs.avg!==999);if(withData.length>0){withData.sort((a,b)=>a.avg-b.avg);let bestC=withData[0];let poorC=withData[withData.length-1];document.getElementById('bestClassName').innerText="Form "+bestC.form;document.getElementById('bestClassDetail').innerText=`${term} | Avg: ${bestC.avg.toFixed(2)} | Students: ${bestC.total}`;document.getElementById('poorClassName').innerText="Form "+poorC.form;document.getElementById('poorClassDetail').innerText=`${term} | Avg: ${poorC.avg.toFixed(2)} | Students: ${poorC.total}`;}else{document.getElementById('bestClassName').innerText="-";document.getElementById('poorClassName').innerText="-";}let html="";if(students.length===0)html="<p>No students yet.</p>";else{html=`<table><tr><th>Name</th><th>Exam</th><th>Form</th><th>PIN</th><th>Results (${term})</th></tr>`;students.forEach(s=>{let myRes=getMarksForTerm(s.examNo,term);let best=getBest6(s.form,myRes);let bestText=Object.keys(myRes).length?best.display+(s.form=="3"||s.form=="4"?` | Points: ${best.totalPoints}`:" (All - Random)"):"No results for "+term;html+=`<tr><td>${s.name}</td><td>${s.examNo}</td><td>${s.form}</td><td>****</td><td>${bestText}</td></tr>`;});html+="</table>";}document.getElementById('allStudentsList').innerHTML=html; }
-function resetResults(){ let term=document.getElementById('adminTermFilter').value;if(!confirm("ARE YOU SURE WANT TO DELETE ALL RESULTS FOR "+term+"?"))return;for(let exam in results)if(results[exam][term])delete results[exam][term];saveData();refreshAdmin();alert("RESULTS FOR "+term+" HAVE BEEN RESET!"); }
-function resetAllResults(){ if(!confirm("ARE YOU SURE YOU WANT TO DELETE ALL RESULTS FOR ALL TERMS?"))return;results={};saveData();refreshAdmin();alert("All results deleted!"); }
-function clearAllSchoolData(){ if(!confirm("This will permanently delete ALL students, results, and teachers. Continue?"))return;if(prompt('Type DELETE to confirm removing all school data:')!=="DELETE")return;students=[];teachers=[];results={};saveData();refreshAdmin();alert("All students, results, and teachers have been deleted from this browser."); }
-function saveResultAdmin(){ let term=document.getElementById('adminEnterTerm').value;let cls=document.getElementById('adminEnterClass').value;let exam=document.getElementById('adminEnterExam').value.trim().toUpperCase();let typedName=document.getElementById('adminEnterName').value.trim();let sub=document.getElementById('adminEnterSubject').value;let mark=document.getElementById('adminEnterMark').value;if(!exam||!typedName||mark==="")return alert("Type Exam Number, Name and Mark");let stu=students.find(s=>s.examNo===exam);if(!stu)return alert("Student not found");if(stu.name.toLowerCase()!==typedName.toLowerCase())return alert("Name does not match! Found: "+stu.name);if(String(stu.form)!==String(cls))return alert("Student is Form "+stu.form+", you selected Form "+cls);if(!results[exam])results[exam]={};if(!results[exam][term])results[exam][term]={};results[exam][term][sub]=Number(mark);saveData();refreshAdmin();alert("Saved by Admin for "+term); }
-function logout(){location.reload();}
+
+function readStoredData(key, fallback, isValid) {
+  try {
+    const rawValue = window.localStorage.getItem(key);
+
+    if (rawValue === null) {
+      return fallback;
+    }
+
+    const parsedValue = JSON.parse(rawValue);
+    return isValid(parsedValue) ? parsedValue : fallback;
+  } catch (error) {
+    console.warn(`Could not read saved data for "${key}".`, error);
+    return fallback;
+  }
+}
+
+function isObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+let students = readStoredData("ign_students", [], Array.isArray);
+let teachers = readStoredData("ign_teachers", [], Array.isArray);
+let results = readStoredData("ign_results", {}, isObject);
+
+let currentStudent = null;
+let currentStudentTerm = "Term 1";
+let currentTeacher = null;
+
+function saveData() {
+  try {
+    window.localStorage.setItem("ign_students", JSON.stringify(students));
+    window.localStorage.setItem("ign_teachers", JSON.stringify(teachers));
+    window.localStorage.setItem("ign_results", JSON.stringify(results));
+    return true;
+  } catch (error) {
+    console.error("Could not save portal data.", error);
+    alert("The browser could not save the data. Check available storage and try again.");
+    return false;
+  }
+}
+
+async function hashPin(pin) {
+  const data = new TextEncoder().encode(pin);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(byte => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function showTab(tab) {
+  ["student", "teacher", "admin"].forEach(name => {
+    document.getElementById(`tab-${name}`).classList.toggle("hidden", name !== tab);
+
+    const buttonName = name.charAt(0).toUpperCase() + name.slice(1);
+    document.getElementById(`btn${buttonName}`).classList.toggle("active", name === tab);
+  });
+}
+
+function showStudentLogin() {
+  document.getElementById("studentRegisterBox").classList.add("hidden");
+  document.getElementById("studentLoginBox").classList.remove("hidden");
+}
+
+function showStudentRegister() {
+  document.getElementById("studentLoginBox").classList.add("hidden");
+  document.getElementById("studentRegisterBox").classList.remove("hidden");
+}
+
+function showTeacherLogin() {
+  document.getElementById("teacherRegisterBox").classList.add("hidden");
+  document.getElementById("teacherLoginBox").classList.remove("hidden");
+}
+
+function showTeacherRegister() {
+  document.getElementById("teacherLoginBox").classList.add("hidden");
+  document.getElementById("teacherRegisterBox").classList.remove("hidden");
+}
+
+function getMarksForTerm(examNo, term) {
+  const allMarks = results[examNo] || {};
+
+  if (allMarks["Term 1"] || allMarks["Term 2"] || allMarks["Term 3"]) {
+    return allMarks[term] || {};
+  }
+
+  return term === "Term 1" ? allMarks : {};
+}
+
+function getFormNumber(form) {
+  const number = parseInt(String(form).replace(/[^0-9]/g, ""), 10);
+  return Number.isNaN(number) ? 1 : number;
+}
+
+function getGrade(formValue, mark) {
+  const form = getFormNumber(formValue);
+  const score = Number(mark);
+
+  if (Number.isNaN(score)) {
+    return "-";
+  }
+
+  if (form === 1 || form === 2) {
+    if (score >= 80) return "A";
+    if (score >= 70) return "B";
+    if (score >= 60) return "C";
+    if (score >= 50) return "D";
+    if (score >= 40) return "E";
+    return "F";
+  }
+
+  if (score >= 90) return "1";
+  if (score >= 80) return "2";
+  if (score >= 70) return "3";
+  if (score >= 60) return "4";
+  if (score >= 50) return "5";
+  if (score >= 40) return "6";
+  if (score >= 30) return "7";
+  if (score >= 20) return "8";
+  return "9";
+}
+
+function gradeToPoints(form, grade) {
+  if (form === 1 || form === 2) {
+    const points = { A: 1, B: 2, C: 3, D: 4, E: 5, F: 6 };
+    return points[grade] || 6;
+  }
+
+  return Number(grade) || 9;
+}
+
+function getBest6(formValue, marksObject) {
+  const form = getFormNumber(formValue);
+  const marks = Object.entries(marksObject).map(([subject, mark]) => ({
+    subject,
+    mark: Number(mark),
+    grade: getGrade(form, mark)
+  }));
+
+  if (form === 1 || form === 2) {
+    const shuffledMarks = [...marks].sort(() => Math.random() - 0.5);
+    const totalPoints = shuffledMarks.reduce(
+      (total, item) => total + gradeToPoints(form, item.grade),
+      0
+    );
+
+    return {
+      best: shuffledMarks,
+      totalPoints: null,
+      display: shuffledMarks
+        .map(item => `${item.subject}: ${item.grade}`)
+        .join(", "),
+      avgPoints: shuffledMarks.length
+        ? totalPoints / shuffledMarks.length
+        : 999
+    };
+  }
+
+  marks.sort((a, b) => Number(a.grade) - Number(b.grade));
+
+  const bestMarks = marks.slice(0, 6);
+  const totalPoints = bestMarks.reduce(
+    (total, item) => total + Number(item.grade),
+    0
+  );
+
+  return {
+    best: bestMarks,
+    totalPoints,
+    display: bestMarks
+      .map(item => `${item.subject}: ${item.grade}`)
+      .join(", "),
+    avgPoints: bestMarks.length ? totalPoints / bestMarks.length : 999
+  };
+}
+
+async function registerStudent() {
+  const name = document.getElementById("sName").value.trim();
+  const exam = document.getElementById("sExam").value.trim().toUpperCase();
+  const form = document.getElementById("sForm").value;
+  const pin = document.getElementById("sPin").value.trim();
+
+  if (!name || !exam || !pin) {
+    return alert("Fill Name, Exam No and PIN");
+  }
+
+  if (pin.length < 4 || pin.length > 8 || !/^\d+$/.test(pin)) {
+    return alert("Student PIN must be 4-8 NUMBERS");
+  }
+
+  if (students.find(student => student.examNo === exam)) {
+    return alert("Exam Number already exists");
+  }
+
+  students.push({
+    name,
+    examNo: exam,
+    form,
+    pinHash: await hashPin(pin)
+  });
+
+  saveData();
+
+  document.getElementById("sLoginExam").value = exam;
+  showStudentLogin();
+  document.getElementById("studentMsg").innerText =
+    "✅ Account created! Now login with your PIN.";
+
+  alert("Account created! Now login with your PIN.");
+}
+
+async function loginStudent() {
+  const exam = document.getElementById("sLoginExam").value.trim().toUpperCase();
+  const pin = document.getElementById("sLoginPin").value.trim();
+  const student = students.find(item => item.examNo === exam);
+
+  if (!student) {
+    return alert("Student not found");
+  }
+
+  if (await hashPin(pin) !== student.pinHash) {
+    return alert("Wrong PIN");
+  }
+
+  currentStudent = student;
+  currentStudentTerm = "Term 1";
+
+  document
+    .querySelectorAll("#tab-student, #tab-teacher, #tab-admin")
+    .forEach(element => element.classList.add("hidden"));
+
+  document.getElementById("mainButtons").classList.add("hidden");
+  document.getElementById("studentDashboard").classList.remove("hidden");
+  document.getElementById("stuName").innerText = student.name;
+  document.getElementById("stuForm").innerText = student.form;
+  document.getElementById("stuExam").innerText = student.examNo;
+
+  renderStudentResults();
+}
+
+function setStudentTerm(term) {
+  currentStudentTerm = term;
+
+  ["Term 1", "Term 2", "Term 3"].forEach((item, index) => {
+    document
+      .getElementById(`stuTerm${index + 1}Btn`)
+      .classList.toggle("active", item === term);
+  });
+
+  renderStudentResults();
+}
+
+function renderStudentResults() {
+  const student = currentStudent;
+  const marks = getMarksForTerm(student.examNo, currentStudentTerm);
+  const best = getBest6(student.form, marks);
+
+  let html = `<h3>Your Results - ${currentStudentTerm}</h3>`;
+
+  if (Object.keys(marks).length === 0) {
+    html += `<p>No results yet for ${currentStudentTerm}.</p>`;
+  } else {
+    html += "<table><tr><th>Subject</th><th>Mark</th><th>Grade</th></tr>";
+
+    for (const subject in marks) {
+      html += `
+        <tr>
+          <td>${subject}</td>
+          <td>${marks[subject]}</td>
+          <td><b>${getGrade(student.form, marks[subject])}</b></td>
+        </tr>`;
+    }
+
+    html += "</table><br>";
+
+    if (student.form == "1" || student.form == "2") {
+      html += `
+        <b>All Subjects (Random Order):</b> ${best.display}<br>
+        <span class="badge">Form 1 &amp; 2 - No Best 6</span>`;
+    } else {
+      html += `
+        <b>Best 6 (${currentStudentTerm}):</b> ${best.display}<br><br>
+        <span class="badge">Total Points (Best 6): ${best.totalPoints}</span>`;
+    }
+  }
+
+  document.getElementById("studentResults").innerHTML = html;
+}
+
+async function registerTeacher() {
+  const name = document.getElementById("tRegName").value.trim();
+  const subjectText = document.getElementById("tRegSubject").value.trim();
+  const pin = document.getElementById("tRegPin").value.trim();
+  const classes = [...document.querySelectorAll(".tClass:checked")]
+    .map(checkbox => checkbox.value);
+
+  if (!name || !subjectText || !pin) {
+    return alert("Fill Name, Subject and Password");
+  }
+
+  if (classes.length === 0) {
+    return alert("Tick at least ONE class you teach");
+  }
+
+  if (pin.length < 4 || pin.length > 8) {
+    return alert("Teacher Password must be 4-8 characters");
+  }
+
+  if (teachers.find(teacher => teacher.name.toLowerCase() === name.toLowerCase())) {
+    return alert("Teacher already exists");
+  }
+
+  const subjects = subjectText
+    .split(",")
+    .map(subject => subject.trim())
+    .filter(Boolean);
+
+  teachers.push({
+    name,
+    subjects,
+    classes,
+    pinHash: await hashPin(pin),
+    status: "Pending"
+  });
+
+  saveData();
+  showTeacherLogin();
+  document.getElementById("tName").value = name;
+
+  alert(
+    "Teacher account created! Status: PENDING.\n\n" +
+    "Wait for Admin to APPROVE you before you can login. " +
+    "This stops students from faking as teachers."
+  );
+}
+
+async function loginTeacher() {
+  const name = document.getElementById("tName").value.trim();
+  const pin = document.getElementById("tPin").value.trim();
+  const teacher = teachers.find(
+    item => item.name.toLowerCase() === name.toLowerCase()
+  );
+
+  if (!teacher) {
+    return alert("Teacher not found. Create account first.");
+  }
+
+  if (await hashPin(pin) !== teacher.pinHash) {
+    return alert("Wrong Password");
+  }
+
+  if (teacher.status !== "Approved") {
+    return alert(
+      "⛔ You are NOT approved yet!\n\n" +
+      `Status: ${teacher.status || "Pending"}\n\n` +
+      "Wait for Admin to approve you. Ask Admin / Headteacher " +
+      "to approve you in Admin Dashboard."
+    );
+  }
+
+  currentTeacher = teacher;
+
+  document
+    .querySelectorAll("#tab-student, #tab-teacher, #tab-admin")
+    .forEach(element => element.classList.add("hidden"));
+
+  document.getElementById("mainButtons").classList.add("hidden");
+  document.getElementById("teacherDashboard").classList.remove("hidden");
+  document.getElementById("teacherNameLabel").innerText = teacher.name;
+  document.getElementById("teacherInfoLabel").innerText =
+    `Form ${teacher.classes.join(", Form ")} - ` +
+    `${teacher.subjects.join(", ")} (You can change below)`;
+
+  updateChosenSummary();
+
+  ["enterTerm", "enterClass", "enterSubject"].forEach(id => {
+    document.getElementById(id).onchange = updateChosenSummary;
+  });
+}
+
+function updateChosenSummary() {
+  const term = document.getElementById("enterTerm").value;
+  const form = document.getElementById("enterClass").value;
+  const subject = document.getElementById("enterSubject").value;
+
+  document.getElementById("chosenSummary").innerText =
+    `You are entering: ${term} | Form ${form} | ${subject}`;
+}
+
+function autoFillStudentName(examNo) {
+  const student = students.find(
+    item => item.examNo === examNo.trim().toUpperCase()
+  );
+  const message = document.getElementById("studentCheckMsg");
+
+  if (student) {
+    document.getElementById("enterStudentName").value = student.name;
+
+    const selectedClass = document.getElementById("enterClass").value;
+
+    if (String(student.form) !== String(selectedClass)) {
+      message.innerText =
+        `⚠️ Warning: This student is Form ${student.form} ` +
+        `but you selected Form ${selectedClass}`;
+    } else {
+      message.innerText = `✅ Found: ${student.name} - Form ${student.form}`;
+    }
+  } else if (examNo.trim().length > 2) {
+    message.innerText = "⚠️ Student not found";
+  } else {
+    message.innerText = "";
+  }
+}
+
+function saveResult() {
+  const term = document.getElementById("enterTerm").value;
+  const selectedClass = document.getElementById("enterClass").value;
+  const exam = document.getElementById("enterExamNo").value.trim().toUpperCase();
+  const typedName = document.getElementById("enterStudentName").value.trim();
+  const subject = document.getElementById("enterSubject").value;
+  const mark = document.getElementById("enterMark").value;
+
+  if (!exam || !typedName || mark === "") {
+    return alert("Type Exam Number, Name and Mark");
+  }
+
+  const student = students.find(item => item.examNo === exam);
+
+  if (!student) {
+    return alert("Student not found.");
+  }
+
+  if (student.name.toLowerCase() !== typedName.toLowerCase()) {
+    return alert(`Name does not match! Found: ${student.name}`);
+  }
+
+  if (String(student.form) !== String(selectedClass)) {
+    return alert(
+      `This student is Form ${student.form}, you selected Form ${selectedClass}`
+    );
+  }
+
+  if (!results[exam]) results[exam] = {};
+  if (!results[exam][term]) results[exam][term] = {};
+
+  results[exam][term][subject] = Number(mark);
+  saveData();
+
+  document.getElementById("saveMsg").innerText =
+    `Saved: ${student.name} (Form ${student.form}) - ${term} - ${subject} = ` +
+    `${mark} -> Grade ${getGrade(student.form, mark)} by ${currentTeacher.name}`;
+
+  document.getElementById("enterMark").value = "";
+}
+
+function loginAdmin() {
+  const name = document.getElementById("aName").value.trim();
+  const pin = document.getElementById("aPin").value.trim();
+
+  if (!name) return alert("Type your Admin Name first!");
+  if (!pin) return alert("Type Admin Password");
+  if (pin !== ADMIN_PASSWORD) return alert("Wrong Admin Password!");
+
+  document
+    .querySelectorAll("#tab-student, #tab-teacher, #tab-admin")
+    .forEach(element => element.classList.add("hidden"));
+
+  document.getElementById("mainButtons").classList.add("hidden");
+  document.getElementById("adminDashboard").classList.remove("hidden");
+  document.getElementById("adminNameLabel").innerText = name;
+
+  refreshAdmin();
+}
+
+function approveTeacher(index) {
+  teachers[index].status = "Approved";
+  saveData();
+  refreshAdmin();
+
+  alert(`Approved! ${teachers[index].name} can now login as teacher.`);
+}
+
+function rejectTeacher(index) {
+  if (!confirm("Reject and DELETE this teacher? This might be a student faking.")) {
+    return;
+  }
+
+  teachers.splice(index, 1);
+  saveData();
+  refreshAdmin();
+
+  alert("Teacher rejected and deleted.");
+}
+
+function refreshAdmin() {
+  const term = document.getElementById("adminTermFilter").value;
+
+  document.getElementById("totalTermLabel").innerText = term;
+  document.getElementById("classTermLabel").innerText = term;
+  document.getElementById("bestPoorTermLabel").innerText = term;
+  document.getElementById("totalStudents").innerText = students.length;
+  document.getElementById("totalTeachers").innerText =
+    teachers.filter(teacher => teacher.status === "Approved").length;
+
+  let totalResults = 0;
+  students.forEach(student => {
+    totalResults += Object.keys(getMarksForTerm(student.examNo, term)).length;
+  });
+  document.getElementById("totalSubjects").innerText = totalResults;
+
+  renderTeacherLists();
+  renderClassCards(term);
+  renderBestAndPoorClasses(term);
+  renderStudentList(term);
+}
+
+function renderTeacherLists() {
+  const pendingTeachers = teachers
+    .map((teacher, index) => ({ teacher, index }))
+    .filter(item => item.teacher.status !== "Approved");
+
+  let pendingHtml = "";
+
+  if (pendingTeachers.length === 0) {
+    pendingHtml = "<p>✅ No pending teachers. All teachers approved.</p>";
+  } else {
+    pendingHtml =
+      "<table><tr><th>Teacher Name</th><th>Subjects</th><th>Classes</th>" +
+      "<th>Status</th><th>Action</th></tr>";
+
+    pendingTeachers.forEach(({ teacher, index }) => {
+      pendingHtml += `
+        <tr>
+          <td><b>${teacher.name}</b></td>
+          <td>${teacher.subjects.join(", ")}</td>
+          <td>Form ${teacher.classes.join(", Form ")}</td>
+          <td>⏳ Pending</td>
+          <td>
+            <button style="background:green;color:#fff;padding:6px"
+              onclick="approveTeacher(${index})">Approve</button>
+            <button style="background:#c0392b;color:#fff;padding:6px"
+              onclick="rejectTeacher(${index})">Reject</button>
+          </td>
+        </tr>`;
+    });
+
+    pendingHtml += "</table>";
+  }
+
+  document.getElementById("pendingTeachersList").innerHTML = pendingHtml;
+
+  let teachersHtml = "";
+
+  if (teachers.length === 0) {
+    teachersHtml = "<p>No teachers registered yet.</p>";
+  } else {
+    teachersHtml =
+      "<table><tr><th>Teacher Name</th><th>Subjects</th><th>Classes</th>" +
+      "<th>Status</th></tr>";
+
+    teachers.forEach(teacher => {
+      teachersHtml += `
+        <tr>
+          <td><b>${teacher.name}</b></td>
+          <td>${teacher.subjects.join(", ")}</td>
+          <td>Form ${teacher.classes.join(", Form ")}</td>
+          <td>${teacher.status === "Approved" ? "✅ Approved" : "⏳ Pending"}</td>
+        </tr>`;
+    });
+
+    teachersHtml += "</table>";
+  }
+
+  document.getElementById("allTeachersList").innerHTML = teachersHtml;
+}
+
+function renderClassCards(term) {
+  const classStats = [];
+  let cardsHtml = "";
+
+  for (const form of ["1", "2", "3", "4"]) {
+    const classStudents = students.filter(
+      student => String(student.form) === form
+    );
+
+    let bestStudent = null;
+    let bestAverage = 999;
+    let classAverageSum = 0;
+    let classAverageCount = 0;
+
+    classStudents.forEach(student => {
+      const marks = getMarksForTerm(student.examNo, term);
+
+      if (Object.keys(marks).length > 0) {
+        const best = getBest6(student.form, marks);
+
+        classAverageSum += best.avgPoints;
+        classAverageCount++;
+
+        if (best.avgPoints < bestAverage) {
+          bestAverage = best.avgPoints;
+          bestStudent = {
+            name: student.name,
+            exam: student.examNo,
+            total: best.totalPoints,
+            display: best.display
+          };
+        }
+      }
+    });
+
+    const classAverage = classAverageCount
+      ? classAverageSum / classAverageCount
+      : 999;
+
+    classStats.push({
+      form,
+      total: classStudents.length,
+      bestStudent,
+      avg: classAverage
+    });
+
+    const bestStudentHtml = bestStudent
+      ? `${bestStudent.name} (${bestStudent.exam})<br>` +
+        `<span class="small">${bestStudent.display}</span><br>` +
+        `<b>${form === "1" || form === "2"
+          ? "All Subjects (Random)"
+          : `Points: ${bestStudent.total}`}</b>`
+      : `No results yet for ${term}`;
+
+    cardsHtml += `
+      <div class="class-card">
+        <h3>Form ${form} - ${term}</h3>
+        <p><b>Total Students:</b> ${classStudents.length}</p>
+        <p><b>Best Student:</b><br>${bestStudentHtml}</p>
+        <p class="small">
+          Class Average:
+          ${classAverage === 999 ? "-" : `${classAverage.toFixed(2)} (Lower is better)`}
+        </p>
+      </div>`;
+  }
+
+  document.getElementById("classCards").innerHTML = cardsHtml;
+  return classStats;
+}
+
+function renderBestAndPoorClasses(term) {
+  const classStats = [];
+
+  for (const form of ["1", "2", "3", "4"]) {
+    const classStudents = students.filter(
+      student => String(student.form) === form
+    );
+
+    let averageSum = 0;
+    let averageCount = 0;
+
+    classStudents.forEach(student => {
+      const marks = getMarksForTerm(student.examNo, term);
+
+      if (Object.keys(marks).length > 0) {
+        averageSum += getBest6(student.form, marks).avgPoints;
+        averageCount++;
+      }
+    });
+
+    classStats.push({
+      form,
+      total: classStudents.length,
+      avg: averageCount ? averageSum / averageCount : 999
+    });
+  }
+
+  const classesWithData = classStats.filter(item => item.avg !== 999);
+
+  if (classesWithData.length > 0) {
+    classesWithData.sort((a, b) => a.avg - b.avg);
+
+    const bestClass = classesWithData[0];
+    const poorClass = classesWithData[classesWithData.length - 1];
+
+    document.getElementById("bestClassName").innerText =
+      `Form ${bestClass.form}`;
+    document.getElementById("bestClassDetail").innerText =
+      `${term} | Avg: ${bestClass.avg.toFixed(2)} | Students: ${bestClass.total}`;
+
+    document.getElementById("poorClassName").innerText =
+      `Form ${poorClass.form}`;
+    document.getElementById("poorClassDetail").innerText =
+      `${term} | Avg: ${poorClass.avg.toFixed(2)} | Students: ${poorClass.total}`;
+  } else {
+    document.getElementById("bestClassName").innerText = "-";
+    document.getElementById("poorClassName").innerText = "-";
+  }
+}
+
+function renderStudentList(term) {
+  let html = "";
+
+  if (students.length === 0) {
+    html = "<p>No students yet.</p>";
+  } else {
+    html =
+      `<table><tr><th>Name</th><th>Exam</th><th>Form</th><th>PIN</th>` +
+      `<th>Results (${term})</th></tr>`;
+
+    students.forEach(student => {
+      const marks = getMarksForTerm(student.examNo, term);
+      const best = getBest6(student.form, marks);
+
+      const bestText = Object.keys(marks).length
+        ? `${best.display}${
+            student.form == "3" || student.form == "4"
+              ? ` | Points: ${best.totalPoints}`
+              : " (All - Random)"
+          }`
+        : `No results for ${term}`;
+
+      html += `
+        <tr>
+          <td>${student.name}</td>
+          <td>${student.examNo}</td>
+          <td>${student.form}</td>
+          <td>****</td>
+          <td>${bestText}</td>
+        </tr>`;
+    });
+
+    html += "</table>";
+  }
+
+  document.getElementById("allStudentsList").innerHTML = html;
+}
+
+function resetResults() {
+  const term = document.getElementById("adminTermFilter").value;
+
+  if (!confirm(`ARE YOU SURE WANT TO DELETE ALL RESULTS FOR ${term}?`)) {
+    return;
+  }
+
+  for (const exam in results) {
+    if (results[exam][term]) {
+      delete results[exam][term];
+    }
+  }
+
+  saveData();
+  refreshAdmin();
+  alert(`RESULTS FOR ${term} HAVE BEEN RESET!`);
+}
+
+function resetAllResults() {
+  if (!confirm("ARE YOU SURE YOU WANT TO DELETE ALL RESULTS FOR ALL TERMS?")) {
+    return;
+  }
+
+  results = {};
+  saveData();
+  refreshAdmin();
+  alert("All results deleted!");
+}
+
+function clearAllSchoolData() {
+  if (!confirm(
+    "This will permanently delete ALL students, results, and teachers. Continue?"
+  )) {
+    return;
+  }
+
+  if (prompt("Type DELETE to confirm removing all school data:") !== "DELETE") {
+    return;
+  }
+
+  students = [];
+  teachers = [];
+  results = {};
+
+  saveData();
+  refreshAdmin();
+  alert("All students, results, and teachers have been deleted from this browser.");
+}
+
+function saveResultAdmin() {
+  const term = document.getElementById("adminEnterTerm").value;
+  const selectedClass = document.getElementById("adminEnterClass").value;
+  const exam = document.getElementById("adminEnterExam").value.trim().toUpperCase();
+  const typedName = document.getElementById("adminEnterName").value.trim();
+  const subject = document.getElementById("adminEnterSubject").value;
+  const mark = document.getElementById("adminEnterMark").value;
+
+  if (!exam || !typedName || mark === "") {
+    return alert("Type Exam Number, Name and Mark");
+  }
+
+  const student = students.find(item => item.examNo === exam);
+
+  if (!student) {
+    return alert("Student not found");
+  }
+
+  if (student.name.toLowerCase() !== typedName.toLowerCase()) {
+    return alert(`Name does not match! Found: ${student.name}`);
+  }
+
+  if (String(student.form) !== String(selectedClass)) {
+    return alert(
+      `Student is Form ${student.form}, you selected Form ${selectedClass}`
+    );
+  }
+
+  if (!results[exam]) results[exam] = {};
+  if (!results[exam][term]) results[exam][term] = {};
+
+  results[exam][term][subject] = Number(mark);
+
+  saveData();
+  refreshAdmin();
+  alert(`Saved by Admin for ${term}`);
+}
+
+function logout() {
+  location.reload();
+}
 </script>
 </body>
 </html>
