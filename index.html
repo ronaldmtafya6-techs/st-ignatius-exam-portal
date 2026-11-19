@@ -230,8 +230,16 @@
   <br>
   <p style="color:#fff;font-size:11px;background:#000;"><marquee>FOR MORE INFO: FACEBOOK: RONALD RONNEX | 📞CONTACTS/ WHATSAPP: +265990381488 | +265894608748 | Email✉: <a href="email"><i>ronaldmtafya6@gmail.com</i></a></p></marquee>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL = "https://YOUR-PROJECT-ID.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "YOUR-PUBLISHABLE-OR-ANON-KEY";
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+</script>
+ <script>
 // ===== ADMIN HARD CODED PASSWORD - CHANGE =====
 const ADMIN_PASSWORD = "IG2026/27SCHOOL";
 let students = JSON.parse(localStorage.getItem('ign_students')||'[]');
