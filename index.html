@@ -41,13 +41,14 @@
   .footer p{margin:5px 0;font-size:14px;opacity:.95}
   .footer a{color:#blue;text-decoration:none;font-weight:bold;background:#fff;}
   .footer .small{font-size:12px;opacity:.7}
+/* Make the animation name match the class declaration */
 .withgod-pop {
   display: inline-block;
   transform-origin: center bottom;
   animation: withgodPop 1.2s ease-in-out infinite;
 }
 
-@keyframes withgod{
+@keyframes withgod {
   0%, 100% {
     transform: translateY(0) scale(1);
     text-shadow: none;
@@ -60,7 +61,12 @@
     transform: translateY(0) scale(0.98);
     text-shadow: none;
   }
+
+/* Respect devices that request less animation */
+@media (prefers-reduced-motion: reduce) {
+  .withgod-pop { animation: none; }
 }
+
  
 </style>
 </head>
