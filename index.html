@@ -175,6 +175,7 @@
       <p style="color:blue;">This will DELETE all results for the selected Term only. Students will NOT be deleted.</p>
       <button class="btn-red" onclick="resetResults()">🔄 RESET Results for Selected Term</button>
       <button style="background:#333;color:#fff;margin-top:6px" onclick="resetAllResults()">🗑️ RESET ALL Results (All Terms)</button>
+    <button class="btn-red" onclick="clearAllSchoolData()">🗑️ CLEAR ALL DATA (Students, Results & Teachers)</button>
     </div>
   </div>
 
@@ -231,6 +232,7 @@
 </div>
 
 <script>
+ {
 // ===== ADMIN HARD CODED PASSWORD - CHANGE =====
 const ADMIN_PASSWORD = "IG2026/27SCHOOL";
 let students = JSON.parse(localStorage.getItem('ign_students')||'[]');
@@ -519,6 +521,16 @@ function saveResultAdmin(){
   if(!results[exam]) results[exam]={};
   if(!results[exam][term]) results[exam][term]={};
   results[exam][term][sub]=Number(mark); saveData(); refreshAdmin(); alert("Saved by Admin for "+term);
+}
+  function clearAllSchoolData(){
+  if(!confirm("This will permanently delete ALL students, results, and teachers. Continue?")) return;
+  if(prompt('Type DELETE to confirm removing all school data:') !== "DELETE") return;
+  students = [];
+  teachers = [];
+  results = {};
+  saveData();
+  refreshAdmin();
+  alert("All students, results, and teachers have been deleted from this browser.");
 }
 function logout(){ location.reload(); }
 </script>
