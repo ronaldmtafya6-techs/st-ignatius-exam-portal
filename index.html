@@ -506,6 +506,16 @@ function resetAllResults(){
   if(!confirm("ARE YOU SURE YOU WANT TO DELETE ALL RESULTS FOR ALL TERMS?")) return;
   results={}; saveData(); refreshAdmin(); alert("All results deleted!");
 }
+   function clearAllSchoolData(){
+  if(!confirm("This will permanently delete ALL students, results, and teachers. Continue?")) return;
+  if(prompt('Type DELETE to confirm removing all school data:') !== "DELETE") return;
+  students = [];
+  teachers = [];
+  results = {};
+  saveData();
+  refreshAdmin();
+  alert("All students, results, and teachers have been deleted from this browser.");
+ }
 function saveResultAdmin(){
   let term=document.getElementById('adminEnterTerm').value;
   let cls=document.getElementById('adminEnterClass').value;
@@ -522,16 +532,7 @@ function saveResultAdmin(){
   if(!results[exam][term]) results[exam][term]={};
   results[exam][term][sub]=Number(mark); saveData(); refreshAdmin(); alert("Saved by Admin for "+term);
 }
-  function clearAllSchoolData(){
-  if(!confirm("This will permanently delete ALL students, results, and teachers. Continue?")) return;
-  if(prompt('Type DELETE to confirm removing all school data:') !== "DELETE") return;
-  students = [];
-  teachers = [];
-  results = {};
-  saveData();
-  refreshAdmin();
-  alert("All students, results, and teachers have been deleted from this browser.");
-}
+ 
 function logout(){ location.reload(); }
 </script>
 </body>
