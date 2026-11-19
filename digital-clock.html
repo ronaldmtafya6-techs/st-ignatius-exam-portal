@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Clock</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 32px 16px;
+      color: #f8fafc;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #172554 55%, #312e81);
+    }
+    main { width: min(100%, 1000px); margin: 0 auto; }
+    header { margin-bottom: 28px; text-align: center; }
+    h1 { margin: 0 0 8px; font-size: clamp(2rem, 5vw, 3rem); }
+    header p { margin: 0; color: #cbd5e1; }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    select, button {
+      min-height: 48px;
+      padding: 10px 14px;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      font: inherit;
+    }
+    select { flex: 1; color: #0f172a; background: #fff; }
+    button { color: #fff; background: #2563eb; border: 0; font-weight: 700; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    .clocks {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+    }
+    .clock {
+      position: relative;
+      padding: 22px;
+      overflow: hidden;
+      background: rgba(15, 23, 42, .78);
+      border: 1px solid rgba(148, 163, 184, .35);
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .2);
+    }
+    .clock h2 { margin: 0 34px 8px 0; font-size: 1.1rem; }
+    .zone { min-height: 18px; color: #94a3b8; font-size: .85rem; }
+    .time { margin: 18px 0 8px; font-size: clamp(2rem, 7vw, 2.8rem); font-variant-numeric: tabular-nums; letter-spacing: .03em; }
+    .date { color: #cbd5e1; }
+    .remove {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      min-height: 34px;
+      padding: 0;
+      border-radius: 50%;
+      color: #cbd5e1;
+      background: #334155;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .remove:hover { background: #b91c1c; }
+    .empty { grid-column: 1 / -1; padding: 32px; text-align: center; color: #cbd5e1; }
+    @media (max-width: 520px) {
+      body { padding: 24px 12px; }
+      .toolbar { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>🌍 World Clock</h1>
+      <p>Current local time in the time zones you choose</p>
+    </header>
+
+    <section class="toolbar" aria-label="Add a time zone">
+      <select id="zoneSelect" aria-label="Choose a time zone">
+        <option value="Africa/Blantyre">Blantyre, Malawi</option>
+        <option value="UTC">UTC</option>
+        <option value="Africa/Johannesburg">Johannesburg, South Africa</option>
+        <option value="Africa/Nairobi">Nairobi, Kenya</option>
+        <option value="Europe/London">London, United Kingdom</option>
+        <option value="Europe/Paris">Paris, France</option>
+        <option value="Asia/Dubai">Dubai, UAE</option>
+        <option value="Asia/Kolkata">Kolkata, India</option>
+        <option value="Asia/Tokyo">Tokyo, Japan</option>
+        <option value="Australia/Sydney">Sydney, Australia</option>
+        <option value="America/New_York">New York, USA</option>
+        <option value="America/Los_Angeles">Los Angeles, USA</option>
+        <option value="Pacific/Auckland">Auckland, New Zealand</option>
+      </select>
+      <button id="addZone" type="button">Add time zone</button>
+    </section>
+
+    <section id="clocks" class="clocks" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const defaultZones = ['Africa/Blantyre', 'UTC', 'Europe/London', 'America/New_York', 'Asia/Tokyo'];
+    const clocksElement = document.getElementById('clocks');
+    const zoneSelect = document.getElementById('zoneSelect');
+    let zones = loadZones();
+
+    function loadZones() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('worldClockZones'));
+        return Array.isArray(saved) ? saved.filter(isValidZone) : [...defaultZones];
+      } catch {
+        return [...defaultZones];
+      }
+    }
+
+    function isValidZone(zone) {
+      try {
+        new Intl.DateTimeFormat('en', { timeZone: zone });
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function saveZones() {
+      localStorage.setItem('worldClockZones', JSON.stringify(zones));
+    }
+
+    function getCityName(zone) {
+      const city = zone.split('/').pop().replaceAll('_', ' ');
+      return city === 'UTC' ? 'Coordinated Universal Time' : city;
+    }
+
+    function renderClocks() {
+      if (zones.length === 0) {
+        clocksElement.innerHTML = '<p class="empty">No clocks yet. Choose a time zone above to add one.</p>';
+        return;
+      }
+
+      clocksElement.innerHTML = zones.map((zone, index) => `
+        <article class="clock">
+          <button class="remove" type="button" data-index="${index}" aria-label="Remove ${getCityName(zone)} clock" title="Remove clock">&times;</button>
+          <h2>${getCityName(zone)}</h2>
+          <div class="zone">${zone.replaceAll('_', ' ')}</div>
+          <div class="time" data-time-zone="${zone}">--:--:--</div>
+          <div class="date" data-date-zone="${zone}"></div>
+        </article>
+      `).join('');
+
+      clocksElement.querySelectorAll('.remove').forEach(button => {
+        button.addEventListener('click', () => {
+          zones.splice(Number(button.dataset.index), 1);
+          saveZones();
+          renderClocks();
+          updateTimes();
+        });
+      });
+      updateTimes();
+    }
+
+    function updateTimes() {
+      const now = new Date();
+      document.querySelectorAll('[data-time-zone]').forEach(element => {
+        element.textContent = new Intl.DateTimeFormat(undefined, {
+          timeZone: element.dataset.timeZone,
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: false
+        }).format(now);
+      });
+      document.querySelectorAll('[data-date-zone]').forEach(element => {
+        element.textContent = new Intl.DateTimeFormat(undefined, {
+          timeZone: element.dataset.dateZone,
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        }).format(now);
+      });
+    }
+
+    document.getElementById('addZone').addEventListener('click', () => {
+      const zone = zoneSelect.value;
+      if (zones.includes(zone)) {
+        zoneSelect.focus();
+        return;
+      }
+      zones.push(zone);
+      saveZones();
+      renderClocks();
+    });
+
+    renderClocks();
+    setInterval(updateTimes, 1000);
+  </script>
+</body>
+</html>
