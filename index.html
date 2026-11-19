@@ -231,40 +231,6 @@
 </div>
 
 <script>
-
- import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// Your st-ignatius-exam-portal configuration
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY", // Replace with your Web App API key from Firebase Console
-  authDomain: "st-ignatius-exam-portal.firebaseapp.com",
-  projectId: "st-ignatius-exam-portal",
-  storageBucket: "st-ignatius-exam-portal.firebasestorage.app",
-  messagingSenderId: "408041884641",
-  appId: "YOUR_APP_ID", // Replace with your Web App ID from Firebase Console
-  measurementId: "G-565105814"
-};
-
-// Initialize Firebase & Firestore
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// Simple test function to write an exam to your database
-export async function addExam(title) {
-  try {
-    const docRef = await addDoc(collection(db, "exams"), {
-      title: title,
-      createdAt: new Date()
-    });
-    console.log("Exam created with ID:", docRef.id);
-    alert("Exam successfully written to database!");
-  } catch (e) {
-    console.error("Error adding exam: ", e);
-    alert("Write failed. Check console and your Security Rules!");
-  }
-}
-
 // ===== ADMIN HARD CODED PASSWORD - CHANGE =====
 const ADMIN_PASSWORD = "IG2026/27SCHOOL";
 let students = JSON.parse(localStorage.getItem('ign_students')||'[]');
