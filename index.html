@@ -43,12 +43,9 @@
   .footer .small{font-size:12px;opacity:.7}
  .button audio{color:blue;border-radius:20px;width:12cm}
 </style>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
- <button onclick="generateAudio()">PRESS HERE🔊</button>
+ <button onclick="generateAudio()">PRESS HERE🔊TO LISTEN</button>
 
 <div class="header">
   <p style="background:#777;color:#fff;width:3.5cm;"><marquee direction="right">WELCOME!</marquee></p><br>
@@ -1074,25 +1071,6 @@ function generateAudio() {
   speech.pitch = 1;
   window.speechSynthesis.speak(speech);
 }
-</script>
- <script>
-  import { initializeApp } from "firebase/app";
-  import { getAuth } from "firebase/auth";
-  import { getFirestore } from "firebase/firestore";
-  ...
-   </script>
-<script>
-firebase.initializeApp({
-  apiKey: "AIzaSyC9aaNEu45SMwCgSeSNS27hT79A9QY5JC8",
-  authDomain: "st-ignatius-exam-portal-faf28.firebaseapp.com",
-  projectId: "st-ignatius-exam-portal-faf28",
-  storageBucket: "st-ignatius-exam-portal-faf28.firebasestorage.app",
-  messagingSenderId: "585453149710",
-  appId: "1:585453149710:web:18a1cea7f4a2c21b67a65f"
-});
-
-const auth = firebase.auth();
-const db = firebase.firestore();
 </script>
 </script>
 </body>
