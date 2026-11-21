@@ -72,7 +72,7 @@
     <input id="sExam" placeholder="Exam Number e.g. IG/F4/001">
     <select id="sForm"><option value="1">Form 1</option><option value="2">Form 2</option><option value="3">Form 3</option><option value="4">Form 4</option></select>
     <input id="sPin" type="password" inputmode="numeric" placeholder="Create PIN (4-8 numbers)">
-    <button class="btn-green" onclick="registerStudent()">Create My Account</button>
+    <button class="btn-green" onclick="registerStudent()">Create Account</button>
     <p style="text-align:center;">Already have account? <a href="#" onclick="showStudentLogin();return false;">Login Here</a></p><br>
     <p style="color:#fff;font-size:9px;">NOTE: ENTER ALL YOUR DETAILS REGISTERED BY THE SCHOOL e.g EXAM NO & NAME FOR THIS HELPS YOUR RESULTS TO BE LOCATED TO YOUR ACCOUNT CORRECTLY</p>
   </div>
@@ -80,7 +80,7 @@
     <h3>Login</h3>
     <input id="sLoginExam" placeholder="Exam Number IG/F/000">
     <input id="sLoginPin" type="password" inputmode="numeric" placeholder="Your PIN">
-    <button class="btn-blue" onclick="loginStudent()">Login as Student</button>
+    <button class="btn-blue" onclick="loginStudent()">Login</button>
     <p style="text-align:center;">No account? <a href="#" onclick="showStudentRegister();return false;">Create Account</a></p>
   </div>
   <p class="small" id="studentMsg"></p>
@@ -89,7 +89,7 @@
 <div id="tab-teacher" class="card hidden">
   <h2>TEACHER'S PORTAL</h2>
   <div id="teacherRegisterBox">
-    <h3>Create Teacher Account</h3>
+    <h3>Create Teacher's Account</h3>
     <p style="color:blue;">After you create account, <b>ADMIN</b> must <b>APPROVE</b> you before you can login. This stops students from faking as teachers.</p>
     <input id="tRegName" placeholder="Teacher Name e.g. WBJ NKUNIKA">
     <label><b>Which Classes Do You Teach? Tick all:</b></label>
@@ -102,7 +102,7 @@
     <label><b>Which Subjects Do You Teach? (Separate with comma)</b></label>
     <input id="tRegSubject" placeholder="English, Mathematics, Biology">
     <input id="tRegPin" type="password" placeholder="Create Your Password (4-8)">
-    <button class="btn-green" onclick="registerTeacher()">Create Teacher Account - Wait For Approval</button>
+    <button class="btn-green" onclick="registerTeacher()">Create Account - Wait For Admin Approval</button>
     <p style="text-align:center;">Already have account? <a href="#" onclick="showTeacherLogin();return false;">Login Here</a></p>
   </div>
   <div id="teacherLoginBox" class="hidden">
@@ -110,7 +110,7 @@
     <p style="color:blue;">ONLY APPROVED TEACHERS CAN LOGIN.</p>
     <input id="tName" placeholder="Teacher Name">
     <input id="tPin" type="password" placeholder="Your Password">
-    <button class="btn-green" onclick="loginTeacher()">Login as Teacher</button>
+    <button class="btn-green" onclick="loginTeacher()">Login</button>
     <p style="text-align:center;">No account? <a href="#" onclick="showTeacherRegister();return false;">Create Account</a></p>
   </div>
 </div>
@@ -194,9 +194,9 @@
     <div class="grid4" id="classCards"></div>
   </div>
   <div class="card">
-    <h3>🏆 Best & Poor Performing Class - <span id="bestPoorTermLabel">Term 1</span></h3>
+    <h3> Best & Poor Performing Class - <span id="bestPoorTermLabel">Term 1</span></h3>
     <div class="grid">
-      <div class="stat best"><b id="bestClassName">-</b><span id="bestClassDetail">No data</span><br>🏆 BEST CLASS</div>
+      <div class="stat best"><b id="bestClassName">-</b><span id="bestClassDetail">No data</span><br>BEST CLASS</div>
       <div class="stat poor"><b id="poorClassName">-</b><span id="poorClassDetail">No data</span><br>⚠️ NEEDS SUPPORT</div>
     </div>
   </div>
@@ -341,7 +341,7 @@ function getGrade(formValue, mark) {
     if (score >= 70) return "B";
     if (score >= 60) return "C";
     if (score >= 50) return "D";
-    if (score >= 40) return "E";
+    if (score >= 40) return "D";
     return "F";
   }
 
@@ -693,7 +693,7 @@ function loginAdmin() {
   const name = document.getElementById("aName").value.trim();
   const pin = document.getElementById("aPin").value.trim();
 
-  if (!name) return alert("Type your Admin Name first!");
+  if (!name) return alert("Type in your Name first!");
   if (!pin) return alert("Type Admin Password");
   if (pin !== ADMIN_PASSWORD) return alert("Wrong Admin Password!");
 
@@ -717,7 +717,7 @@ function approveTeacher(index) {
 }
 
 function rejectTeacher(index) {
-  if (!confirm("Reject and DELETE this teacher? This might be a student faking.")) {
+  if (!confirm("Reject and DELETE this teacher? This might be a student.")) {
     return;
   }
 
@@ -1063,7 +1063,7 @@ function logout() {
 <script>
 function generateAudio() {
   const speech = new SpeechSynthesisUtterance(
-    "Welcome to Saint Ignatius Secondary Examination Portal, This is developed to help teachers and students to enter results and check results online respectively, developer RONALD RONNEX  former student and a now he is currently studying information and communication technology, I.C.T, therefore for the students and teachers create your accounts to continue, if you already have an account please login, For your own information this portal does not support Artificial Intelligence, AI, for more info, check in the footer below, or visit his website at, www.ronaldronnex.simdif.com"
+    "welcome to saint ignatius of loyola boarding secondary school, examination portal, this is developed to help, teachers, and students to enter, and check results online respectively, therefore, for the teachers and students create your account first to continue, if you already have an account please login, for your own information, this portal does not, and it is not supported by artificial intelligence, about the developer, this was designed and developed by RONALD RONNEX the former student, and now he is currently studying, information and commuication technology, i.c.t, for more info check in the footer below, or visit his website at, www.ronaldronnex.simdif.com, thank you! for listening."
  );
 
   speech.lang = "en-ZM";
