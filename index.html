@@ -44,6 +44,8 @@
  .button audio{color:blue;border-radius:20px;width:12cm}
 </style>
 </head>
+ <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <body>
  <button onclick="generateAudio()">PRESS HERE🔊</button>
 
@@ -1071,6 +1073,21 @@ function generateAudio() {
   speech.pitch = 1;
   window.speechSynthesis.speak(speech);
 }
+</script>
+ <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC9aaNEu45SMwCgSeSNS27hT79A9QY5JC8",
+    authDomain: "st-ignatius-exam-portal-faf28.firebaseapp.com",
+    projectId: "st-ignatius-exam-portal-faf28",
+    storageBucket: "st-ignatius-exam-portal-faf28.firebasestorage.app",
+    messagingSenderId: "585453149710",
+    appId: "1:585453149710:web:18a1cea7f4a2c21b67a65f",
+    measurementId: "G-ESQKFK21PD"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  console.log("St Ignatius Firebase Connected! ✅");
 </script>
 </body>
 </html>
