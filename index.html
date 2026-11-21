@@ -1077,21 +1077,23 @@ function generateAudio() {
 </script>
  <script>
   import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-
-const firebaseConfig = {
+  import { getAuth } from "firebase/auth";
+  import { getFirestore } from "firebase/firestore";
+  ...
+   </script>
+<script>
+firebase.initializeApp({
   apiKey: "AIzaSyC9aaNEu45SMwCgSeSNS27hT79A9QY5JC8",
   authDomain: "st-ignatius-exam-portal-faf28.firebaseapp.com",
   projectId: "st-ignatius-exam-portal-faf28",
   storageBucket: "st-ignatius-exam-portal-faf28.firebasestorage.app",
   messagingSenderId: "585453149710",
   appId: "1:585453149710:web:18a1cea7f4a2c21b67a65f"
-};
+});
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const auth = firebase.auth();
+const db = firebase.firestore();
+</script>
 </script>
 </body>
 </html>
