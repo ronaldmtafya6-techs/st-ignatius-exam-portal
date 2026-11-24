@@ -236,7 +236,7 @@ const ADMIN_PASSWORD = "IG2026/27SCHOOL";
 
 function readStoredData(key, fallback, isValid) {
   try {
-    const rawValue = window.localStorage.getItem(key);
+    const rawValue = window.saveonline.getItem(key);
 
     if (rawValue === null) {
       return fallback;
@@ -264,9 +264,9 @@ let currentTeacher = null;
 
 function saveData() {
   try {
-    window.localStorage.setItem("ign_students", JSON.stringify(students));
-    window.localStorage.setItem("ign_teachers", JSON.stringify(teachers));
-    window.localStorage.setItem("ign_results", JSON.stringify(results));
+    window.saveonline.setItem("ign_students", JSON.stringify(students));
+    window.saveonline.setItem("ign_teachers", JSON.stringify(teachers));
+    window.saveonline.setItem("ign_results", JSON.stringify(results));
     return true;
   } catch (error) {
     console.error("Could not save portal data.", error);
