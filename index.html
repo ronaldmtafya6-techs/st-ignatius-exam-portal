@@ -231,6 +231,7 @@
 </div>
 
 <script>
+ const ADMIN_PASSWORD = "IG2026/27SCHOOL";
  <!-- Paste this Firebase Adapter right before your existing script tags -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
@@ -271,7 +272,6 @@
         .catch(err => console.error("Firebase save failed:", err));
     }
   };
- </script>
 
 function readStoredData(key, fallback, isValid) {
   try {
@@ -1120,6 +1120,7 @@ function saveUserProfile(userId, name, email) {
     email: email
   });
 }
+</script>
 </script>
 </script>
 </body>
