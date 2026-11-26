@@ -1072,39 +1072,6 @@ function generateAudio() {
   window.speechSynthesis.speak(speech);
 }
 </script>
- <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
-  
-  const firebaseConfig = {
-    apiKey: "AIzaSyDLkIc3u01WIo3_lQMm0VPafx-J1jNUw1E",
-    authDomain: "st-ignatius-exam-portal-ed221.firebaseapp.com",
-    databaseURL: "https://st-ignatius-exam-portal-ed221-default-rtdb.firebaseio.com",
-    projectId: "st-ignatius-exam-portal-ed221",
-    storageBucket: "st-ignatius-exam-portal-ed221.firebasestorage.app",
-    messagingSenderId: "47714520753",
-    appId: "1:47714520753:web:e7f5f72b10687d89459c90",
-    measurementId: "G-R2R6B8J3C9"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  
-  window.saveOnline = function(key, value){
-    return set(ref(db, 'StIgnatiusPortal/' + key), value);
-  }
-  window.loadOnline = function(key, callback){
-    onValue(ref(db, 'StIgnatiusPortal/' + key), (snap)=>{
-      callback(snap.val() || []);
-    });
-  }
-  window.deleteOnline = function(key){
-    return remove(ref(db, 'StIgnatiusPortal/' + key));
-  }
-  
-  window.myDB = db;
-  console.log("Firebase Connected - St Ignatius Online!");
-</script>
 </script>
 </body>
 </html>
